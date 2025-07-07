@@ -1,11 +1,39 @@
-import React from "react";
+import React, { useState } from "react";
 import './Login.scss';
 import { useHistory } from "react-router-dom";
+import { toast } from "react-toastify";
+import { loginUser } from "../../services/userService";
 
 const Login = (props) => {
     let history = useHistory();
+
+    const [valueLogin, setValueLogin] = useState("");
+    const [matKhau, setPassword] = useState("");
+    const defaultValidInput = {
+        isValidValueLogin: true,
+        isValidPassword: true,
+    };
+    const [objValidInput, setObjValidInput] = useState(defaultValidInput);
+
     const handleCreateNewAccount = () => {
         history.push("/register");
+    }
+
+    const handleLogin = async () => {
+        setObjValidInput(defaultValidInput);
+
+        if (!valueLogin) {
+            setObjValidInput({ ...defaultValidInput, isValidValueLogin: false });
+            toast.error("Vui lòng nhập email hoặc số điện thoại.");
+            return;
+        }
+        if (!matKhau) {
+            setObjValidInput({ ...defaultValidInput, isValidPassword: false });
+            toast.error("Vui lòng nhập mật khẩu.");
+            return;
+        }
+
+        await loginUser(valueLogin, matKhau);
     }
 
     return (
@@ -18,9 +46,21 @@ const Login = (props) => {
                     </div>
                     <div className="right-content col-12 col-sm-5 d-flex flex-column gap-3 py-3">
                         <div className="brand d-sm-none">C-Housing</div>
-                        <input type="text" className="form-control" placeholder="Email hoặc số điện thoại"/>
-                        <input type="password" className="form-control" placeholder="Mật khẩu"/>
-                        <button className="btn btn-primary">Đăng nhập</button>
+                        <input
+                            type="text"
+                            className={objValidInput.isValidValueLogin ? 'form-control' : 'form-control is-invalid'}
+                            placeholder="Email hoặc số điện thoại"
+                            value={valueLogin}
+                            onChange={(event) => setValueLogin(event.target.value)}
+                        />
+                        <input
+                            type="password"
+                            className={objValidInput.isValidPassword ? 'form-control' : 'form-control is-invalid'}
+                            placeholder="Mật khẩu"
+                            value={matKhau}
+                            onChange={(event) => setPassword(event.target.value)}
+                        />
+                        <button className="btn btn-primary" onClick={() => handleLogin()}>Đăng nhập</button>
                         <span className="text-center">
                             <a href="#" className="forgot-password">Quên mật khẩu?</a>
                         </span>

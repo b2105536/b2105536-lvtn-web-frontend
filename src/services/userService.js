@@ -6,4 +6,13 @@ const registerNewUser = (soDienThoai, hoTen, email, matKhau) => {
     });
 }
 
-export { registerNewUser };
+const loginUser = (valueLogin, matKhau) => {
+    return axios.post('http://localhost:8080/api/v1/login', {
+        valueLogin, matKhau
+    });
+}
+
+export {
+    registerNewUser,
+    loginUser
+ };
