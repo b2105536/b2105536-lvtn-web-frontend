@@ -33,7 +33,19 @@ const Login = (props) => {
             return;
         }
 
-        await loginUser(valueLogin, matKhau);
+        let response = await loginUser(valueLogin, matKhau);
+        if (response && response.data && +response.data.EC === 0) {
+            let data = {
+                isAuthenticated: true,
+                token: 'fake token'
+            };
+            sessionStorage.setItem('account', JSON.stringify(data));
+            
+            history.push("/users");
+        }
+        if (response && response.data && +response.data.EC !== 0) {
+            toast.error(response.data.EM);
+        }
     }
 
     return (
