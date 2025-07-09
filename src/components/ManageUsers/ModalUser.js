@@ -72,20 +72,70 @@ const ModalUser = (props) => {
     const checkValidInputs = () => {
         setValidInputs(validDefaultInputs);
 
-        let arr = ['soDienThoai', 'email', 'nhomId', 'matKhau'];
-        let check = true;
-        for (let i = 0; i < arr.length; i++) {
-            if (!userData[arr[i]]) {
-                toast.error(`Trường ${arr[i]} trống.`);
-                let _validInputs = _.cloneDeep(validDefaultInputs);
-                _validInputs[arr[i]] = false;
-                setValidInputs(_validInputs);
-                check = false;
-                break;
-            }
+        // let arr = ['soDienThoai', 'email', 'nhomId', 'matKhau'];
+        // let check = true;
+        // for (let i = 0; i < arr.length; i++) {
+        //     if (!userData[arr[i]]) {
+        //         let _validInputs = _.cloneDeep(validDefaultInputs);
+        //         toast.error(`Trường ${arr[i] === 'soDienThoai' ? 'số điện thoại' : arr[i] === 'matKhau' ? 'mật khẩu' : arr[i] === 'nhomId' ? 'Nhóm người dùng' : arr[i]} không được trống.`);
+        //         _validInputs[arr[i]] = false;
+        //         setValidInputs(_validInputs);
+        //         check = false;
+        //         break;
+        //     }
+        // }
+
+        let _validInputs = _.cloneDeep(validDefaultInputs);
+
+        if (!userData.soDienThoai) {
+            _validInputs.soDienThoai = false;
+            setValidInputs(_validInputs);
+            toast.error("Vui lòng nhập số điện thoại.");
+            return false;
+        }
+        let regxMobile = /(0[3|5|7|8|9])+([0-9]{8})\b/g;
+        if (!regxMobile.test(userData.soDienThoai)) {
+            _validInputs.soDienThoai = false;
+            setValidInputs(_validInputs);
+            toast.error("Vui lòng nhập một số điện thoại hợp lệ!");
+            return false;
         }
 
-        return check;
+        if (!userData.email) {
+            _validInputs.email = false;
+            setValidInputs(_validInputs);
+            toast.error("Vui lòng nhập email.");
+            return false;
+        }
+        let regxEmail = /\S+@\S+\.\S+/;
+        if (!regxEmail.test(userData.email)) {
+            _validInputs.email = false;
+            setValidInputs(_validInputs);
+            toast.error("Vui lòng nhập một email hợp lệ!");
+            return false;
+        }
+
+        if (!userData.nhomId) {
+            _validInputs.nhomId = false;
+            setValidInputs(_validInputs);
+            toast.error("Vui lòng chọn nhóm người dùng.");
+            return false;
+        }
+
+        if (!userData.matKhau) {
+            _validInputs.matKhau = false;
+            setValidInputs(_validInputs);
+            toast.error("Vui lòng nhập mật khẩu.");
+            return false;
+        }
+        if (userData.matKhau.length < 8) {
+            _validInputs.matKhau = false;
+            setValidInputs(_validInputs);
+            toast.error("Mật khẩu phải có ít nhất 8 ký tự.");
+            return false;
+        }
+
+        return true;
     }
 
     const handleConfirmUser = async () => {
