@@ -4,6 +4,7 @@ import { fetchAllUsers, deleteUser } from '../../services/userService';
 import ReactPaginate from 'react-paginate';
 import { toast } from 'react-toastify';
 import ModalDelete from './ModalDelete';
+import ModalUser from './ModalUser';
 
 const Users = (props) => {
     const [listUsers, setListUsers] = useState([]);
@@ -14,6 +15,8 @@ const Users = (props) => {
     const [isShowModalDelete, setIsShowModalDelete] = useState(false);
     const [dataModal, setDataModal] = useState({});
     
+    const [isShowModalUser, setIsShowModalUser] = useState(false);
+
     useEffect (() => {
         fetchUsers() ;
     }, [currentPage]);
@@ -53,6 +56,10 @@ const Users = (props) => {
         }
     }
 
+    const onHideModalUser = () => {
+        setIsShowModalUser(false);
+    }
+
     return (
         <>
             <div className='container'>
@@ -63,7 +70,7 @@ const Users = (props) => {
                         </div>
                         <div className='actions'>
                             <button className='btn btn-success'>Làm mới</button>
-                            <button className='btn btn-primary'>Thêm người dùng</button>
+                            <button className='btn btn-primary' onClick={() => setIsShowModalUser(true)}>Thêm người dùng</button>
                         </div>
                     </div>
                     <div className='user-body'>
@@ -138,6 +145,12 @@ const Users = (props) => {
                 handleClose={handleClose}
                 confirmDeleteUser={confirmDeleteUser}
                 dataModal={dataModal}
+            />
+
+            <ModalUser
+                title={"Tạo mới người dùng"}
+                onHide={onHideModalUser}
+                show={isShowModalUser}
             />
         </>
     );
