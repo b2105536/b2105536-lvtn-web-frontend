@@ -1,7 +1,7 @@
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import { useState, useEffect } from 'react';
-import { fetchGroup, createNewUser } from '../../services/userService';
+import { fetchGroup, createNewUser, updateCurrentUser } from '../../services/userService';
 import { toast } from 'react-toastify';
 import _ from 'lodash';
 
@@ -44,7 +44,10 @@ const ModalUser = (props) => {
 
     useEffect (() => {
         if (action === 'UPDATE') {
-            setUserData({...dataModalUser, nhomId: dataModalUser.NhomND ? dataModalUser.NhomND.id : ''});
+            setUserData({
+                ...dataModalUser,
+                nhomId: dataModalUser.NhomND ? dataModalUser.NhomND.id : ''
+            });
         }
     }, [dataModalUser]);
 
@@ -86,6 +89,8 @@ const ModalUser = (props) => {
     }
 
     const checkValidInputs = () => {
+        if (action === 'UPDATE') return true;
+        
         setValidInputs(validDefaultInputs);
 
         // let arr = ['soDienThoai', 'email', 'nhomId', 'matKhau'];
@@ -157,10 +162,16 @@ const ModalUser = (props) => {
     const handleConfirmUser = async () => {
         let check = checkValidInputs();
         if (check === true) {
-            let res = await createNewUser(userData);
+            let res = action === 'CREATE' ?
+                    await createNewUser({...userData, nhomId: userData['nhomId']})
+                :
+                    await updateCurrentUser({...userData, nhomId: userData['nhomId']});
             if (res.data && res.data.EC === 0) {
                 props.onHide();
-                setUserData({...defaultUserData, nhomId: userGroups[0].id});
+                setUserData({
+                    ...defaultUserData,
+                    nhomId: userGroups && userGroups.length > 0 ? userGroups[0].id : ''
+                });
             } 
             
             if (res.data && res.data.EC !== 0) {
@@ -218,7 +229,7 @@ const ModalUser = (props) => {
                         </div>
                         <div className='col-12 col-sm-6 form-group'>
                             <label>Giới tính:</label>
-                            <select className='form-select' value={userData.gioiTinh}
+                            <select className='form-select' value={userData.gioiTinh === true ? '1' : '0'}
                                 onChange={(event) => handleOnChangeInput(event.target.value, "gioiTinh")}
                             >
                                 <option value="1">Nam</option>
@@ -239,7 +250,7 @@ const ModalUser = (props) => {
                         </div>
                         <div className='col-12 col-sm-12 form-group'>
                             <label>Ảnh đại diện:</label>
-                            <input className='form-control' type='file' value={userData.anhDD}
+                            <input className='form-control' type='file'
                                 onChange={(event) => handleOnChangeInput(event.target.files[0], "anhDD")}
                             />
                         </div>
