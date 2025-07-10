@@ -61,14 +61,14 @@ const ModalUser = (props) => {
 
     const getGroups = async () => {
         let res = await fetchGroup();
-        if (res && res.data && res.data.EC === 0) {
-            setUserGroups(res.data.DT);
-            if (res.data.DT && res.data.DT.length > 0) {
-                let groups = res.data.DT;
+        if (res && res.EC === 0) {
+            setUserGroups(res.DT);
+            if (res.DT && res.DT.length > 0) {
+                let groups = res.DT;
                 setUserData({...userData, nhomId: groups[0].id});
             }
         } else {
-            toast.error(res.data.EM);
+            toast.error(res.EM);
         }
     }
 
@@ -166,7 +166,7 @@ const ModalUser = (props) => {
                     await createNewUser({...userData, nhomId: userData['nhomId']})
                 :
                     await updateCurrentUser({...userData, nhomId: userData['nhomId']});
-            if (res.data && res.data.EC === 0) {
+            if (res && res.EC === 0) {
                 props.onHide();
                 setUserData({
                     ...defaultUserData,
@@ -174,10 +174,10 @@ const ModalUser = (props) => {
                 });
             } 
             
-            if (res.data && res.data.EC !== 0) {
-                toast.error(res.data.EM);
+            if (res && res.EC !== 0) {
+                toast.error(res.EM);
                 let _validInputs = _.cloneDeep(validDefaultInputs);
-                _validInputs[res.data.DT] = false;
+                _validInputs[res.DT] = false;
                 setValidInputs(_validInputs);
             }
         }
@@ -229,7 +229,7 @@ const ModalUser = (props) => {
                         </div>
                         <div className='col-12 col-sm-6 form-group'>
                             <label>Giới tính:</label>
-                            <select className='form-select' value={userData.gioiTinh === true ? '1' : '0'}
+                            <select className='form-select' value={userData.gioiTinh === true ? '1' : userData.gioiTinh === false ? '0' : userData.gioiTinh}
                                 onChange={(event) => handleOnChangeInput(event.target.value, "gioiTinh")}
                             >
                                 <option value="1">Nam</option>

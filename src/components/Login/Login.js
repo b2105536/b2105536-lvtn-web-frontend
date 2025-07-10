@@ -34,7 +34,7 @@ const Login = (props) => {
         }
 
         let response = await loginUser(valueLogin, matKhau);
-        if (response && response.data && +response.data.EC === 0) {
+        if (response && +response.EC === 0) {
             let data = {
                 isAuthenticated: true,
                 token: 'fake token'
@@ -44,8 +44,8 @@ const Login = (props) => {
             history.push("/users");
             window.location.reload();
         }
-        if (response && response.data && +response.data.EC !== 0) {
-            toast.error(response.data.EM);
+        if (response && +response.EC !== 0) {
+            toast.error(response.EM);
         }
     }
 
