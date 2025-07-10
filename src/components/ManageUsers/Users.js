@@ -9,7 +9,7 @@ import ModalUser from './ModalUser';
 const Users = (props) => {
     const [listUsers, setListUsers] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const [currentLimit, setCurrentLimit] = useState(3);
+    const [currentLimit, setCurrentLimit] = useState(5);
     const [totalPages, setTotalPages] = useState(0);
 
     // Modal Delete
@@ -72,22 +72,28 @@ const Users = (props) => {
         setIsShowModalUser(true);
     }
 
+    const handleRefresh = async () => {
+        await fetchUsers();
+    }
+
     return (
         <>
             <div className='container'>
                 <div className='manage-users-container'>
                     <div className='user-header'>
-                        <div className='title'>
-                            <h3>Bảng Người Dùng</h3>
+                        <div className='title mt-3'>
+                            <h3>Danh Sách Người Dùng</h3>
                         </div>
-                        <div className='actions'>
-                            <button className='btn btn-success'>Làm mới</button>
+                        <div className='actions my-3'>
+                            <button className='btn btn-success refresh' onClick={() => handleRefresh()}>
+                                <i className="fa fa-refresh"></i>Làm mới
+                            </button>
                             <button className='btn btn-primary'
                                 onClick={() => {
                                     setIsShowModalUser(true);
                                     setActionModalUser("CREATE");
                                 }}
-                            >Thêm người dùng</button>
+                            ><i className="fa fa-plus-circle"></i>Thêm người dùng</button>
                         </div>
                     </div>
                     <div className='user-body'>
@@ -117,9 +123,9 @@ const Users = (props) => {
                                                         <td>{item.NhomND ? item.NhomND.tenNhom : ''}</td>
                                                         <td>
                                                             <button className='btn btn-warning mx-3'
-                                                                    onClick={() => handleEditUser(item)}>Sửa</button>
+                                                                    onClick={() => handleEditUser(item)}><i className="fa fa-pencil"></i>Sửa</button>
                                                             <button className='btn btn-danger'
-                                                                    onClick={() => handleDeleteUser(item)}>Xóa</button>
+                                                                    onClick={() => handleDeleteUser(item)}><i className="fa fa-trash"></i>Xóa</button>
                                                         </td>
                                                     </tr>
                                                 );
