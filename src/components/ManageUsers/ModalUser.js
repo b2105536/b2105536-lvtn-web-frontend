@@ -6,6 +6,8 @@ import { toast } from 'react-toastify';
 import _ from 'lodash';
 
 const ModalUser = (props) => {
+    const { action, dataModalUser } = props;
+    
     const defaultUserData = {
         soDienThoai: '',
         hoTen: '',
@@ -39,6 +41,20 @@ const ModalUser = (props) => {
     useEffect (() => {
         getGroups();
     }, []);
+
+    useEffect (() => {
+        if (action === 'UPDATE') {
+            setUserData({...dataModalUser, nhomId: dataModalUser.NhomND ? dataModalUser.NhomND.id : ''});
+        }
+    }, [dataModalUser]);
+
+    useEffect (() => {
+        if (action === 'CREATE') {
+            if (userGroups && userGroups.length > 0) {
+                setUserData({...userData, nhomId: userGroups[0].id});
+            }
+        }
+    }, [action]);
 
     const getGroups = async () => {
         let res = await fetchGroup();
@@ -77,9 +93,9 @@ const ModalUser = (props) => {
         // for (let i = 0; i < arr.length; i++) {
         //     if (!userData[arr[i]]) {
         //         let _validInputs = _.cloneDeep(validDefaultInputs);
-        //         toast.error(`Trường ${arr[i] === 'soDienThoai' ? 'số điện thoại' : arr[i] === 'matKhau' ? 'mật khẩu' : arr[i] === 'nhomId' ? 'Nhóm người dùng' : arr[i]} không được trống.`);
         //         _validInputs[arr[i]] = false;
         //         setValidInputs(_validInputs);
+        //         toast.error(`Trường ${arr[i] === 'soDienThoai' ? 'số điện thoại' : arr[i] === 'matKhau' ? 'mật khẩu' : arr[i] === 'nhomId' ? 'Nhóm người dùng' : arr[i]} không được trống.`);
         //         check = false;
         //         break;
         //     }
@@ -145,18 +161,29 @@ const ModalUser = (props) => {
             if (res.data && res.data.EC === 0) {
                 props.onHide();
                 setUserData({...defaultUserData, nhomId: userGroups[0].id});
-            } else {
-                toast.error("Quá trình tạo người dùng đang gặp vấn đề...");
+            } 
+            
+            if (res.data && res.data.EC !== 0) {
+                toast.error(res.data.EM);
+                let _validInputs = _.cloneDeep(validDefaultInputs);
+                _validInputs[res.data.DT] = false;
+                setValidInputs(_validInputs);
             }
         }
     }
 
+    const handleCloseModalUser = () => {
+        props.onHide();
+        setUserData(defaultUserData);
+        setValidInputs(validDefaultInputs);
+    }
+
     return (
         <>
-            <Modal size="lg" show={props.show} onHide={props.onHide} className='modal-user'>
+            <Modal size="lg" show={props.show} onHide={() => handleCloseModalUser()} className='modal-user'>
                 <Modal.Header closeButton>
                     <Modal.Title id="contained-modal-title-vcenter">
-                        <span>{props.title}</span>
+                        <span>{props.action === 'CREATE' ? 'Tạo người dùng mới' : 'Cập nhật thông tin người dùng'}</span>
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
@@ -164,6 +191,7 @@ const ModalUser = (props) => {
                         <div className='col-12 col-sm-6 form-group'>
                             <label>Số điện thoại (<span className='red'>*</span>):</label>
                             <input className={validInputs.soDienThoai ? 'form-control' : 'form-control is-invalid'}
+                                disabled={action === 'CREATE' ? false : true}
                                 type='text' value={userData.soDienThoai}
                                 onChange={(event) => handleOnChangeInput(event.target.value, "soDienThoai")}
                             />
@@ -177,6 +205,7 @@ const ModalUser = (props) => {
                         <div className='col-12 col-sm-6 form-group'>
                             <label>Email (<span className='red'>*</span>):</label>
                             <input className={validInputs.email ? 'form-control' : 'form-control is-invalid'}
+                                disabled={action === 'CREATE' ? false : true}
                                 type='email' value={userData.email}
                                 onChange={(event) => handleOnChangeInput(event.target.value, "email")}
                             />
@@ -189,7 +218,7 @@ const ModalUser = (props) => {
                         </div>
                         <div className='col-12 col-sm-6 form-group'>
                             <label>Giới tính:</label>
-                            <select className='form-select'
+                            <select className='form-select' value={userData.gioiTinh}
                                 onChange={(event) => handleOnChangeInput(event.target.value, "gioiTinh")}
                             >
                                 <option value="1">Nam</option>
@@ -198,7 +227,7 @@ const ModalUser = (props) => {
                         </div>
                         <div className='col-12 col-sm-6 form-group'>
                             <label>Ngày sinh:</label>
-                            <input className='form-control' type='date'
+                            <input className='form-control' type='date' value={userData.ngaySinh}
                                 onChange={(event) => handleOnChangeInput(event.target.value, "ngaySinh")}
                             />
                         </div>
@@ -210,7 +239,7 @@ const ModalUser = (props) => {
                         </div>
                         <div className='col-12 col-sm-12 form-group'>
                             <label>Ảnh đại diện:</label>
-                            <input className='form-control' type='file'
+                            <input className='form-control' type='file' value={userData.anhDD}
                                 onChange={(event) => handleOnChangeInput(event.target.files[0], "anhDD")}
                             />
                         </div>
@@ -218,6 +247,7 @@ const ModalUser = (props) => {
                             <label>Nhóm người dùng (<span className='red'>*</span>):</label>
                             <select className={validInputs.nhomId ? 'form-select' : 'form-select is-invalid'}
                                 onChange={(event) => handleOnChangeInput(event.target.value, "nhomId")}
+                                value={userData.nhomId}
                             >
                                 {userGroups.length > 0 &&
                                     userGroups.map((item, index) => {
@@ -229,20 +259,25 @@ const ModalUser = (props) => {
                             </select>
                         </div>
                         <div className='col-12 col-sm-6 form-group'>
-                            <label>Mật khẩu (<span className='red'>*</span>):</label>
-                            <input className={validInputs.matKhau ? 'form-control' : 'form-control is-invalid'}
-                                type='password' value={userData.matKhau}
-                                onChange={(event) => handleOnChangeInput(event.target.value, "matKhau")}
-                            />
+                            { action === 'CREATE' &&
+                                <>
+                                <label>Mật khẩu (<span className='red'>*</span>):</label>
+                                <input className={validInputs.matKhau ? 'form-control' : 'form-control is-invalid'}
+                                    type='password' value={userData.matKhau}
+                                    onChange={(event) => handleOnChangeInput(event.target.value, "matKhau")}
+                                />
+                                </>
+                            }
                         </div>
+                        
                     </div>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={props.onHide}>
+                    <Button variant="secondary" onClick={() => handleCloseModalUser()}>
                     Đóng
                     </Button>
                     <Button variant="primary" onClick={() => handleConfirmUser()}>
-                    Lưu thay đổi
+                    {action === 'CREATE' ? 'Lưu thay đổi': 'Cập nhật'}
                     </Button>
                 </Modal.Footer>
             </Modal>
