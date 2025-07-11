@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { getUserAccount } from "../services/userService";
 
-const UserContext = React.createContext({ name: '', auth: false });
+const UserContext = React.createContext(null);
 
 const UserProvider = ({ children }) => {
     // User is the name of the "data" that gets stored in context
@@ -22,6 +23,27 @@ const UserProvider = ({ children }) => {
             auth: false,
         }));
     };
+
+    const fetchUser = async () => {
+        let response = await getUserAccount();
+        if (response && response.EC === 0) {
+            let quyenCuaNhom = response.DT.quyenCuaNhom;
+            let email = response.DT.email;
+            let hoTen = response.DT.hoTen;
+            let token = response.DT.access_token;
+
+            let data = {
+                isAuthenticated: true,
+                token,
+                account: { quyenCuaNhom, email, hoTen }
+            };
+            setUser(data);
+        }
+    }
+
+    useEffect (() => {
+        fetchUser();
+    }, []);
 
     return (
         <UserContext.Provider value={{ user, loginContext, logout }}>

@@ -48,11 +48,9 @@ const Login = (props) => {
                 token,
                 account: { quyenCuaNhom, email, hoTen }
             };
-            sessionStorage.setItem('account', JSON.stringify(data));
-            loginContext(data);
 
+            loginContext(data);
             history.push("/users");
-            // window.location.reload();
         }
         if (response && +response.EC !== 0) {
             toast.error(response.EM);
@@ -64,14 +62,6 @@ const Login = (props) => {
             handleLogin();
         }
     }
-
-    useEffect (() => {
-        let session = sessionStorage.getItem('account');
-        if (session) {
-            history.push("/");
-            window.location.reload();
-        }
-    }, []);
     
     return (
         <div className="login-container">
