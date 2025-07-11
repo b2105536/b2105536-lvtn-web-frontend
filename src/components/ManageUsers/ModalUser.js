@@ -232,6 +232,7 @@ const ModalUser = (props) => {
                             <select className='form-select' value={userData.gioiTinh === true ? '1' : userData.gioiTinh === false ? '0' : userData.gioiTinh}
                                 onChange={(event) => handleOnChangeInput(event.target.value, "gioiTinh")}
                             >
+                                <option value="">-- Chọn giới tính --</option>
                                 <option value="1">Nam</option>
                                 <option value="0">Nữ</option>
                             </select>
