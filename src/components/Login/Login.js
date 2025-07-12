@@ -49,6 +49,7 @@ const Login = (props) => {
                 account: { quyenCuaNhom, email, hoTen }
             };
 
+            localStorage.setItem('jwt', token);
             loginContext(data);
             history.push("/users");
         }
