@@ -22,3 +22,54 @@
         color: white;
     }
 }
+
+.nav-header {
+    .bg-header {
+        background-color: #20232a; 
+    }
+
+    .navbar-brand {
+        color: #61dafb !important;
+
+        img {
+            margin-right: 7px;
+            animation: App-logo-rotation infinite 10s linear;
+        }
+        
+        @keyframes App-logo-rotation {
+            0% {
+                transform: rotateY(0deg);
+            }
+        
+            50% {
+                transform: rotateY(180deg);
+            }
+        
+            100% {
+                transform: rotateY(360deg);
+            }
+        }
+    }
+
+    .navbar-nav {
+        a, .nav-link {
+            color: white !important;
+
+            &:hover {
+                color: #61dafb !important;
+            }
+        }
+    }
+
+    .nav-link {
+        &.active {
+            color: #61dafb !important;
+        }
+    }
+
+    .dropdown-menu {
+        a {
+            color: #212529 !important;
+        }
+    }
+}
