@@ -1,5 +1,5 @@
 import { useEffect, useState, forwardRef, useImperativeHandle } from "react";
-import { fetchAllRoles, deleteRole } from "../../services/roleService";
+import { fetchAllRoles, deleteRole, updateCurrentRole } from "../../services/roleService";
 import ReactPaginate from 'react-paginate';
 import { toast } from 'react-toastify';
 
@@ -8,6 +8,11 @@ const TableRole = forwardRef ((props, ref) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [currentLimit, setCurrentLimit] = useState(5);
     const [totalPages, setTotalPages] = useState(0);
+
+    const [isEditing, setIsEditing] = useState(false);
+    const [selectedRole, setSelectedRole] = useState(null);
+    const [url, setUrl] = useState('');
+    const [quyenHan, setQuyenHan] = useState('');
     
     useEffect (() => {
         getAllRoles() ;
@@ -39,6 +44,31 @@ const TableRole = forwardRef ((props, ref) => {
         }
     }
 
+    const handleEditRole = (role) => {
+        setSelectedRole(role);
+        setUrl(role.url);
+        setQuyenHan(role.quyenHan);
+        setIsEditing(true);
+    }
+
+    const handleSaveRole = async () => {
+        if (url && quyenHan) {
+            let updatedRole = { ...selectedRole, url, quyenHan };
+            console.log(updatedRole)
+            let response = await updateCurrentRole(updatedRole);
+            if (response && +response.EC === 0) {
+                toast.success(response.EM);
+                setIsEditing(false);
+                setSelectedRole(null);
+                await getAllRoles();
+            } else {
+                toast.error(response.EM);
+            }
+        } else {
+            toast.error("Vui lòng điền đủ thông tin.");
+        }
+    }
+
     return (
         <>
         <div className='role-body'>
@@ -61,6 +91,8 @@ const TableRole = forwardRef ((props, ref) => {
                                             <td>{item.url}</td>
                                             <td>{item.quyenHan}</td>
                                             <td>
+                                                <button className='btn btn-warning mx-3'
+                                                        onClick={() => handleEditRole(item)}><i className="fa fa-pencil"></i>Sửa</button>
                                                 <button className='btn btn-danger'
                                                         onClick={() => handleDeleteRole(item)}><i className="fa fa-trash"></i>Xóa</button>
                                             </td>
@@ -74,6 +106,37 @@ const TableRole = forwardRef ((props, ref) => {
                 </tbody>
             </table>
         </div>
+        {isEditing && (
+            <>
+                <hr />
+                <div className='edit-role-form row mb-3'>
+                    <h4>Chỉnh sửa quyền hạn:</h4>
+                    <div className='col-5 form-group'>
+                        <label>URL:</label>
+                        <input
+                            type='text'
+                            className='form-control'
+                            value={url}
+                            onChange={(event) => setUrl(event.target.value)}
+                        />
+                    </div>
+                    <div className='col-5 form-group'>
+                        <label>Quyền hạn:</label>
+                        <input
+                            type='text'
+                            className='form-control'
+                            value={quyenHan}
+                            onChange={(event) => setQuyenHan(event.target.value)}
+                        />
+                    </div>
+                    <div className='col-2 mt-4 actions'>
+                        <i className="fa fa-floppy-o save" title="Lưu" onClick={handleSaveRole}></i>
+                        <i className="fa fa-undo cancel" title="Hủy" onClick={() => setIsEditing(false)}></i>
+                    </div>
+                </div>
+            </>   
+        )}
+
         {totalPages > 0 &&
             <div className='role-footer'>
                 <ReactPaginate

@@ -98,9 +98,9 @@ const Role = (props) => {
                                             />
                                         </div>
                                         <div className='col-2 mt-4 actions'>
-                                            <i className="fa fa-plus-circle add" onClick={() => handleAddNewInput()}></i>
+                                            <i className="fa fa-plus-circle add" title="Thêm" onClick={() => handleAddNewInput()}></i>
                                             {index >= 1 &&
-                                                <i className="fa fa-trash delete" onClick={() => handleDeleteInput(key)}></i>
+                                                <i className="fa fa-trash delete" title="Xóa" onClick={() => handleDeleteInput(key)}></i>
                                             }
                                         </div>
                                     </div>
@@ -108,7 +108,7 @@ const Role = (props) => {
                             })
                         }
                         <div>
-                            <button className='btn btn-warning mt-3' onClick={() => handleSave()}>Lưu thay đổi</button>
+                            <button className='btn btn-primary mt-3' onClick={() => handleSave()}>Lưu thay đổi</button>
                         </div>
                     </div>   
                 </div>
