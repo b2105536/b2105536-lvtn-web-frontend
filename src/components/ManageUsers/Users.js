@@ -131,7 +131,7 @@ const Users = (props) => {
                                             })}
                                         </>
                                     :
-                                        <><tr><td>Không tìm thấy người dùng.</td></tr></>
+                                        <><tr><td colSpan={6}>Không tìm thấy người dùng.</td></tr></>
                                 }
                             </tbody>
                         </table>
