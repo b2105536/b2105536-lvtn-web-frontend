@@ -5,14 +5,11 @@ import Users from '../components/ManageUsers/Users';
 import PrivateRoutes from "./PrivateRoutes";
 import Role from "../components/Role/Role";
 import GroupRole from "../components/Role/GroupRole";
+import About from "../components/About/About";
+import Home from "../components/Home/Home";
+import Houses from "../components/ManageHouses/Houses";
 
 const AppRoutes = (props) => {
-    const Houses = () => {
-        return (
-            <span>Houses</span>
-        );
-    }
-    
     return (
         <>
         <Switch>
@@ -27,11 +24,14 @@ const AppRoutes = (props) => {
             <Route path="/register">
               <Register />
             </Route>
+            <Route path="/about">
+              <About />
+            </Route>
             <Route path="/" exact>
-              Home
+              <Home />
             </Route>
             <Route path="*">
-              404 Not Found
+              <div className="container">404 Not Found</div>
             </Route>
           </Switch>
         </>

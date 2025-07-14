@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import './Register.scss';
-import { useHistory } from "react-router-dom";
+import { useHistory, Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { registerNewUser } from "../../services/userService";
+import { UserContext } from "../../context/UserContext";
 
 const Register = (props) => {
+    const { user } = useContext(UserContext);
+
     const [soDienThoai, setMobile] = useState("");
     const [hoTen, setFullname] = useState("");
     const [email, setEmail] = useState("");
@@ -22,6 +25,12 @@ const Register = (props) => {
     const handleLogin = () => {
         history.push("/login");
     }
+
+    useEffect (() => {
+        if (user && user.isAuthenticated) {
+            history.push('/');
+        }
+    }, []);
 
     const isValidInputs = () => {
         setObjCheckInput(defaultValidInput);
@@ -82,18 +91,14 @@ const Register = (props) => {
         }
     }
 
-    useEffect(() => {
-        // axios.get("http://localhost:8080/api/v1/test-api").then(data => {
-        //     console.log(data);
-        // })
-    }, []);
-
     return (
         <div className="register-container">
             <div className="container">
                 <div className="row px-3 px-sm-0">
                     <div className="left-content col-12 col-sm-7 d-none d-sm-block">
-                        <div className="brand">C-Housing</div>
+                        <div className="brand">
+                            <Link to="/"><span title='Quay về Trang chủ'>C-Housing</span></Link>
+                        </div>
                         <div className="detail">Hệ thống quản lý nhà trọ sinh viên.</div>
                     </div>
                     <div className="right-content col-12 col-sm-5 d-flex flex-column gap-3 py-3">
@@ -136,6 +141,12 @@ const Register = (props) => {
                             <button className="btn btn-success" onClick={() => handleLogin()}>
                                 Bạn đã có tài khoản ư? Hãy đăng nhập.
                             </button>
+                            <div className="mt-3 return">
+                                <Link to="/">
+                                    <i className="fa fa-arrow-circle-left"></i>
+                                    <span title="Quay về Trang chủ">Quay về Trang chủ</span>
+                                </Link>
+                            </div>
                         </div>
                     </div>
                 </div>

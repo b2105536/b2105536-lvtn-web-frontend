@@ -28,13 +28,13 @@ const NavHeader = (props) => {
         }
     }
 
-    if (user && user.isAuthenticated === true || location.pathname === '/') {
+    if (user && user.isAuthenticated === true || location.pathname === '/' || location.pathname === '/about') {
         return (
         <>
             <div className="nav-header">
                 <Navbar bg="header" expand="lg">
                     <Container>
-                        <Navbar.Brand href="#home">
+                        <Navbar.Brand>
                             <img
                                 src={logo}
                                 width="30"
@@ -42,7 +42,7 @@ const NavHeader = (props) => {
                                 className="d-inline-block align-top"
                                 alt="C-Housing logo"
                             />
-                            <span className="brand-name"></span>C-Housing
+                            <span className="brand-name">C-Housing</span>
                         </Navbar.Brand>
                         <Navbar.Toggle aria-controls="basic-navbar-nav" />
                         <Navbar.Collapse id="basic-navbar-nav">
