@@ -166,8 +166,10 @@ const Users = (props) => {
             <ModalDelete
                 show={isShowModalDelete}
                 handleClose={handleClose}
-                confirmDeleteUser={confirmDeleteUser}
+                confirmDelete={confirmDeleteUser}
                 dataModal={dataModal}
+                title="Xóa người dùng"
+                content={`Bạn có chắc chắn muốn xóa người dùng ${dataModal.email} hay không?`}
             />
 
             <ModalUser

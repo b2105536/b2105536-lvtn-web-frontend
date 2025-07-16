@@ -6,14 +6,14 @@ const ModalDelete = (props) => {
         <>
             <Modal show={props.show} onHide={props.handleClose} centered>
                 <Modal.Header closeButton>
-                    <Modal.Title>Xóa người dùng</Modal.Title>
+                    <Modal.Title>{props.title}</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>Bạn có chắc chắn muốn xóa người dùng {props.dataModal.email} hay không?</Modal.Body>
+                <Modal.Body>{props.content}</Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={props.handleClose}>
                     Đóng
                     </Button>
-                    <Button variant="primary" onClick={props.confirmDeleteUser}>
+                    <Button variant="primary" onClick={props.confirmDelete}>
                     OK
                     </Button>
                 </Modal.Footer>
