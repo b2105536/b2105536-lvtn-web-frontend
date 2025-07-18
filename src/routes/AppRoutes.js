@@ -8,11 +8,13 @@ import GroupRole from "../components/Role/GroupRole";
 import About from "../components/About/About";
 import Home from "../components/Home/Home";
 import Houses from "../components/ManageHouses/Houses";
+import Dashboards from "../components/Dashboard/Dashboards";
 
 const AppRoutes = (props) => {
     return (
         <>
         <Switch>
+            <PrivateRoutes path="/dashboards" component={Dashboards} />
             <PrivateRoutes path="/users" component={Users} />
             <PrivateRoutes path="/houses" component={Houses} />
             <PrivateRoutes path="/roles" component={Role} />

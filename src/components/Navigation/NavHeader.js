@@ -29,6 +29,45 @@ const NavHeader = (props) => {
     }
 
     if (user && user.isAuthenticated === true || location.pathname === '/' || location.pathname === '/about') {
+        const userRoleId = user?.account?.quyenCuaNhom?.id;
+
+        const renderNavLinks = () => {
+            switch (userRoleId) {
+                case 1: // Admin
+                    return (
+                        <>
+                            <NavLink to="/dashboards" exact className="nav-link">Dashboards</NavLink>
+                            <NavLink to="/users" className="nav-link">Users</NavLink>
+                            <NavLink to="/houses" className="nav-link">Houses</NavLink>
+                            <NavLink to="/roles" className="nav-link">Roles</NavLink>
+                            <NavLink to="/group-role" className="nav-link">Group-Role</NavLink>
+                            <NavLink to="/about" className="nav-link">About</NavLink>
+                        </>
+                    );
+                case 2: // Chủ trọ
+                    return (
+                        <>
+                            <NavLink to="/" className="nav-link">Home</NavLink>
+                            <NavLink to="/about" className="nav-link">About</NavLink>
+                        </>
+                    );
+                case 3: // Sinh viên
+                    return (
+                        <>
+                            <NavLink to="/" className="nav-link">Home</NavLink>
+                            <NavLink to="/about" className="nav-link">About</NavLink>
+                        </>
+                    );
+                default: // Khách hàng
+                    return (
+                        <>
+                            <NavLink to="/" className="nav-link">Home</NavLink>
+                            <NavLink to="/about" className="nav-link">About</NavLink>
+                        </>
+                    );
+            }
+        };
+        
         return (
         <>
             <div className="nav-header">
@@ -47,12 +86,7 @@ const NavHeader = (props) => {
                         <Navbar.Toggle aria-controls="basic-navbar-nav" />
                         <Navbar.Collapse id="basic-navbar-nav">
                             <Nav className="me-auto">
-                                <NavLink to="/" exact className="nav-link">Home</NavLink>
-                                <NavLink to="/users" className="nav-link">Users</NavLink>
-                                <NavLink to="/houses" className="nav-link">Houses</NavLink>
-                                <NavLink to="/roles" className="nav-link">Roles</NavLink>
-                                <NavLink to="/group-role" className="nav-link">Group-Role</NavLink>
-                                <NavLink to="/about" className="nav-link">About</NavLink>
+                                {renderNavLinks()}
                             </Nav>
                             <Nav>
                                 {user && user.isAuthenticated === true ?

@@ -51,7 +51,7 @@ const Login = (props) => {
 
             localStorage.setItem('jwt', token);
             loginContext(data);
-            history.push("/users");
+            history.push("/");
         }
         if (response && +response.EC !== 0) {
             toast.error(response.EM);
