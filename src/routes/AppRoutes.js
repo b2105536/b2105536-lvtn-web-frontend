@@ -10,6 +10,7 @@ import Home from "../components/Home/Home";
 import Houses from "../components/ManageHouses/Houses";
 import Dashboards from "../components/Dashboard/Dashboards";
 import Rooms from "../components/ManageRooms/Rooms";
+import ManageStudents from "../components/Management/ManageStudents";
 
 const AppRoutes = (props) => {
     return (
@@ -21,6 +22,7 @@ const AppRoutes = (props) => {
             <PrivateRoutes path="/rooms" component={Rooms} />
             <PrivateRoutes path="/roles" component={Role} />
             <PrivateRoutes path="/group-role" component={GroupRole} />
+            <PrivateRoutes path="/manage/student" component={ManageStudents} />
             
             <Route path="/login">
               <Login />
