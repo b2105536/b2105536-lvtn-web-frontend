@@ -16,6 +16,8 @@ const Rooms = (props) => {
     const [dataModal, setDataModal] = useState({});
 
     const [isShowModalRoom, setIsShowModalRoom] = useState(false);
+    const [actionModalRoom, setActionModalRoom] = useState("CREATE");
+    const [dataModalRoom, setDataModalRoom] = useState({});
 
     useEffect (() => {
         fetchRooms();
@@ -57,8 +59,14 @@ const Rooms = (props) => {
 
     const onHideModalRoom = async () => {
         setIsShowModalRoom(false);
-        setDataModal({});
+        setDataModalRoom({});
         await fetchRooms();
+    }
+
+    const handleEditRoom = (room) => {
+        setActionModalRoom("UPDATE");
+        setDataModalRoom(room);
+        setIsShowModalRoom(true);
     }
 
     return (
@@ -73,7 +81,11 @@ const Rooms = (props) => {
                             <button className='btn btn-success refresh'>
                                     <i className="fa fa-refresh"></i>Làm mới
                             </button>
-                            <button className='btn btn-primary' onClick={() => setIsShowModalRoom(true)}>
+                            <button className='btn btn-primary'
+                                onClick={() => {
+                                    setIsShowModalRoom(true);
+                                    setActionModalRoom("CREATE")
+                                }}>
                                 <i className="fa fa-plus-circle"></i>Thêm phòng trọ
                             </button>
                         </div>
@@ -106,7 +118,8 @@ const Rooms = (props) => {
                                                             <td>{item.sucChua}</td>
                                                             <td>{item.BangMa ? item.BangMa.giaTri : ''}</td>
                                                             <td>
-                                                                <button className='btn btn-warning mx-3'><i className="fa fa-pencil"></i>Sửa</button>
+                                                                <button className='btn btn-warning mx-3'
+                                                                    onClick={() => handleEditRoom(item)}><i className="fa fa-pencil"></i>Sửa</button>
                                                                 <button className='btn btn-danger'
                                                                     onClick={() => handleDeleteRoom(item)}><i className="fa fa-trash"></i>Xóa</button>
                                                             </td>
@@ -155,9 +168,10 @@ const Rooms = (props) => {
                 content={`Bạn có chắc chắn muốn xóa phòng ${dataModal.tenPhong} hay không?`}
             />
             <ModalRoom 
-                title='Tạo phòng trọ mới'
                 onHide={onHideModalRoom}
                 show={isShowModalRoom}
+                action={actionModalRoom}
+                dataModalRoom={dataModalRoom}
             />
         </>
     );

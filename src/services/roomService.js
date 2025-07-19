@@ -21,10 +21,15 @@ const createNewRoom = (roomData) => {
     return axios.post('/api/v1/room/create', {...roomData});
 }
 
+const updateCurrentRoom = (roomData) => {
+    return axios.put('api/v1/room/update', {...roomData});
+}
+
 export {
     fetchAllRooms,
     deleteRoom,
     fetchHouse,
     fetchState,
-    createNewRoom
+    createNewRoom,
+    updateCurrentRoom
 };

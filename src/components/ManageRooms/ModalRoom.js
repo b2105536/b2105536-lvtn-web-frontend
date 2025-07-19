@@ -1,11 +1,13 @@
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import { useState, useEffect } from 'react';
-import { fetchHouse, fetchState, createNewRoom } from '../../services/roomService';
+import { fetchHouse, fetchState, createNewRoom, updateCurrentRoom } from '../../services/roomService';
 import { toast } from 'react-toastify';
 import _ from 'lodash';
 
 const ModalRoom = (props) => {
+    const { action, dataModalRoom } = props;
+
     const defaultRoomData = {
         tenPhong: '',
         coGacXep: '',
@@ -37,13 +39,36 @@ const ModalRoom = (props) => {
         getHouses();
     }, []);
 
+    useEffect (() => {
+        if (action === 'UPDATE') {
+            setRoomData({
+                ...dataModalRoom,
+                ttPhongId: dataModalRoom.BangMa ? dataModalRoom.BangMa.id : '',
+                nhaId: dataModalRoom.Nha ? dataModalRoom.Nha.id : ''});
+        }
+    }, [dataModalRoom]);
+
+    useEffect (() => {
+        if (action === 'CREATE') {
+            if (roomStates && roomStates.length > 0) {
+                setRoomData(prev => ({ ...prev, ttPhongId: roomStates[0].id }));
+            }
+            if (roomHouses && roomHouses.length > 0) {
+                setRoomData(prev => ({ ...prev, nhaId: roomHouses[0].id }));
+            }
+        }
+    }, [action]);
+
     const getRoomStats = async () => {
         let res = await fetchState("TTPHONG");
         if (res && res.EC === 0) {
             setRoomStates(res.DT);
-            if (res.DT && res.DT.length > 0) {
+            if (action === 'CREATE' && res.DT && res.DT.length > 0) {
                 let stats = res.DT;
-                setRoomData(prev => ({ ...prev, ttPhongId: stats[0].id }));
+                let emptyState = stats.find(item => item.giaTri === 'Còn trống');
+                if (emptyState) {
+                    setRoomData(prev => ({ ...prev, ttPhongId: emptyState.id }));
+                }
             }
         } else {
             toast.error(res.EM);
@@ -70,6 +95,8 @@ const ModalRoom = (props) => {
     }
 
     const checkValidInputs = () => {
+        if (action === 'UPDATE') return true;
+
         setValidInputs(validDefaultInputs);
 
         let arr = ['tenPhong', 'giaThue', 'dienTich', 'sucChua', 'ttPhongId', 'nhaId'];
@@ -91,13 +118,16 @@ const ModalRoom = (props) => {
     const handleConfirmRoom = async () => {
         let check = checkValidInputs();
         if (check === true) {
-            let res = await createNewRoom(roomData);
+            let res = action === 'CREATE' ?
+                await createNewRoom(roomData)
+            :   await updateCurrentRoom(roomData);
+
             if (res && res.EC === 0) {
                 props.onHide();
                 setRoomData({
                     ...defaultRoomData,
-                    ttPhongId: roomStates[0].id,    // Tạo mới cần nạp lại
-                    nhaId: roomHouses[0].id         // Tạo mới cần nạp lại
+                    ttPhongId: roomStates && roomStates.length > 0 ? roomStates[0].id : '',    // Tạo mới cần nạp lại
+                    nhaId: roomHouses && roomHouses.length > 0 ? roomHouses[0].id : ''         // Tạo mới cần nạp lại
                 });
             } else {
                 toast.error(res.EM);
@@ -108,12 +138,18 @@ const ModalRoom = (props) => {
         }
     }
 
+    const handleCloseModalRoom = () => {
+        props.onHide();
+        setRoomData(defaultRoomData);
+        setValidInputs(validDefaultInputs);
+    }
+
     return (
         <>
-            <Modal size="lg" show={props.show} onHide={props.onHide} className='modal-room'>
+            <Modal size="lg" show={props.show} onHide={() => handleCloseModalRoom()} className='modal-room'>
                 <Modal.Header closeButton>
                     <Modal.Title id="contained-modal-title-vcenter">
-                        <span>{props.title}</span>
+                        <span>{props.action === 'CREATE' ? 'Tạo phòng trọ mới' : 'Cập nhật thông tin phòng trọ'}</span>
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
@@ -154,23 +190,27 @@ const ModalRoom = (props) => {
                                 onChange={(event) => handleOnChangeInput(event.target.value, 'sucChua')}
                             />
                         </div>
-                        <div className='col-12 col-sm-4 form-group'>
-                            <label>Trạng thái (<span className='red'>*</span>):</label>
-                            <select className={validInputs.ttPhongId ? 'form-select' : 'form-select is-invalid'}
-                                onChange={(event) => handleOnChangeInput(event.target.value, 'ttPhongId')}>
-                                {roomStates.length > 0 &&
-                                    roomStates.map((item, index) => {
-                                        return (
-                                            <option key={`stat-${index}`} value={item.id}>{item.giaTri}</option>
-                                        );
-                                    })
-                                }
-                            </select>
-                        </div>
+                        {action === 'UPDATE' && (
+                            <div className='col-12 col-sm-4 form-group'>
+                                <label>Trạng thái (<span className='red'>*</span>):</label>
+                                <select className={validInputs.ttPhongId ? 'form-select' : 'form-select is-invalid'}
+                                    onChange={(event) => handleOnChangeInput(event.target.value, 'ttPhongId')}
+                                    value={roomData.ttPhongId}>
+                                    {roomStates.length > 0 &&
+                                        roomStates.map((item, index) => {
+                                            return (
+                                                <option key={`stat-${index}`} value={item.id}>{item.giaTri}</option>
+                                            );
+                                        })
+                                    }
+                                </select>
+                            </div>
+                        )}
                         <div className='col-12 col-sm-6 form-group'>
                             <label>Nhà trọ (<span className='red'>*</span>):</label>
                             <select className={validInputs.nhaId ? 'form-select' : 'form-select is-invalid'}
-                            onChange={(event) => handleOnChangeInput(event.target.value, 'nhaId')}>
+                                onChange={(event) => handleOnChangeInput(event.target.value, 'nhaId')}
+                                value={roomData.nhaId}>
                                 {roomHouses.length > 0 &&
                                     roomHouses.map((item, index) => {
                                         return (
@@ -186,7 +226,7 @@ const ModalRoom = (props) => {
                                     className='form-check-input'
                                     type='checkbox'
                                     id='checkMe'
-                                    value={roomData.coGacXep}
+                                    checked={roomData.coGacXep}
                                     onChange={(event) => handleOnChangeInput(event.target.checked, 'coGacXep')}
                                     // checked // isAssigned === true => checked
                                 />
@@ -198,9 +238,9 @@ const ModalRoom = (props) => {
                     </div>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={props.onHide}>Đóng</Button>
+                    <Button variant="secondary" onClick={() => handleCloseModalRoom()}>Đóng</Button>
                     <Button variant="primary" onClick={() => handleConfirmRoom()}>
-                    Lưu thay đổi
+                        {action === 'CREATE' ? 'Lưu thay đổi': 'Cập nhật'}
                     </Button>
                 </Modal.Footer>
             </Modal>
