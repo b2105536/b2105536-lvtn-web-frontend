@@ -59,6 +59,7 @@ const Role = (props) => {
             if (res && res.EC === 0) {
                 toast.success(res.EM);
                 childRef.current.fetchListRolesAgain();
+                setListChilds({ child1: childDefaultData });
             }
         } else {
             toast.error("URL không được rỗng.");

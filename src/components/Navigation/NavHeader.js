@@ -36,36 +36,35 @@ const NavHeader = (props) => {
                 case 1: // Admin
                     return (
                         <>
-                            <NavLink to="/dashboards" exact className="nav-link">Dashboards</NavLink>
-                            <NavLink to="/users" className="nav-link">Users</NavLink>
-                            <NavLink to="/houses" className="nav-link">Houses</NavLink>
-                            <NavLink to="/rooms" className="nav-link">Rooms</NavLink>
-                            <NavLink to="/roles" className="nav-link">Roles</NavLink>
-                            <NavLink to="/group-role" className="nav-link">Group-Role</NavLink>
-                            <NavLink to="/about" className="nav-link">About</NavLink>
+                            <NavLink to="/dashboards" exact className="nav-link">TỔNG QUAN</NavLink>
+                            <NavLink to="/users" className="nav-link">NGƯỜI DÙNG</NavLink>
+                            <NavLink to="/houses" className="nav-link">NHÀ</NavLink>
+                            <NavLink to="/rooms" className="nav-link">PHÒNG</NavLink>
+                            <NavLink to="/manage/service" className="nav-link">DỊCH VỤ</NavLink>
+                            <NavLink to="/roles" className="nav-link">QUYỀN</NavLink>
+                            <NavLink to="/group-role" className="nav-link">PHÂN QUYỀN</NavLink>
                         </>
                     );
                 case 2: // Chủ trọ
                     return (
                         <>
-                            <NavLink to="/" className="nav-link">Home</NavLink>
-                            <NavLink to="/manage/student" className="nav-link">Manage</NavLink>
-                            <NavLink to="/manage/service" className="nav-link">Services</NavLink>
-                            <NavLink to="/about" className="nav-link">About</NavLink>
+                            <NavLink to="/" className="nav-link">TRANG CHỦ</NavLink>
+                            <NavLink to="/manage/student" className="nav-link">QUẢN LÝ CHUNG</NavLink>
+                            <NavLink to="/about" className="nav-link">GIỚI THIỆU</NavLink>
                         </>
                     );
                 case 3: // Sinh viên
                     return (
                         <>
-                            <NavLink to="/" className="nav-link">Home</NavLink>
-                            <NavLink to="/about" className="nav-link">About</NavLink>
+                            <NavLink to="/" className="nav-link">TRANG CHỦ</NavLink>
+                            <NavLink to="/about" className="nav-link">GIỚI THIỆU</NavLink>
                         </>
                     );
                 default: // Khách hàng
                     return (
                         <>
-                            <NavLink to="/" className="nav-link">Home</NavLink>
-                            <NavLink to="/about" className="nav-link">About</NavLink>
+                            <NavLink to="/" className="nav-link">TRANG CHỦ</NavLink>
+                            <NavLink to="/about" className="nav-link">GIỚI THIỆU</NavLink>
                         </>
                     );
             }

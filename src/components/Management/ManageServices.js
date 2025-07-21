@@ -61,6 +61,7 @@ const ManageServices = (props) => {
             if (res && res.EC === 0) {
                 toast.success(res.EM);
                 childRef.current.fetchListServicesAgain();
+                setListChilds({ child: childDefaultData });
             }
         } else {
             toast.error("Tên dịch vụ không được rỗng.");

@@ -111,9 +111,9 @@ const ManageStudents = (props) => {
                         <div className="card text-center mt-4">
                             <div className="card-header">
                                 <ul className="nav nav-tabs card-header-tabs">
-                                <li className="nav-item">
-                                    <span className="nav-link active">Danh sách phòng</span>
-                                </li>
+                                    <li className="nav-item">
+                                        <span className="nav-link active">Danh sách phòng</span>
+                                    </li>
                                 </ul>
                             </div>
 
