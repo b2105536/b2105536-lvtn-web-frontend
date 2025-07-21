@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import './ModalStudent.scss';
 import { Modal, Button, Form } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { createOrLinkTenant } from "../../services/managementService";
@@ -19,15 +20,33 @@ const ModalStudent = (props) => {
     }, [show]);
 
     const handleSubmit = async () => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const mobileRegex = /^(0[3|5|7|8|9])+([0-9]{8})$/;
+        
         if (!hoTen || !email || !soDienThoai) {
             toast.error("Vui lòng nhập đầy đủ thông tin.");
             return;
         }
 
+        if (!emailRegex.test(email)) {
+            toast.error("Email không hợp lệ.");
+            return;
+        }
+
+        if (!mobileRegex.test(soDienThoai)) {
+            toast.error("Số điện thoại không hợp lệ.");
+            return;
+        }
+
         let res = await createOrLinkTenant({
-            hoTen, email, soDienThoai, phongId: roomId, emailChuTro: user?.account?.email, giaThue: rent });
-        console.log(res)
-        console.log(res.DT)
+            hoTen,
+            email,
+            soDienThoai,
+            phongId: roomId,
+            emailChuTro: user?.account?.email,
+            giaThue: rent
+        });
+        
         if (res && res.EC === 0) {
             toast.success("Thêm khách thuê thành công.");
             onHide();
@@ -38,7 +57,7 @@ const ModalStudent = (props) => {
     };
 
     return (
-        <Modal show={show} onHide={onHide} backdrop="static" size="md" centered>
+        <Modal show={show} onHide={onHide} backdrop="static" size="md" centered className="modal-student">
             <Modal.Header closeButton>
                 <Modal.Title>Thêm khách thuê</Modal.Title>
             </Modal.Header>

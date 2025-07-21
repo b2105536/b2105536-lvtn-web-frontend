@@ -1,9 +1,10 @@
 import { useContext, useEffect, useState } from 'react';
 import './ManageStudents.scss';
 import { toast } from 'react-toastify';
-import { fetchHousesByOwner, fetchRoom } from '../../services/managementService';
+import { fetchHousesByOwner, fetchRoom, deleteContract } from '../../services/managementService';
 import { UserContext } from "../../context/UserContext";
 import ModalStudent from './ModalStudent';
+import ModalDelete from '../ManageUsers/ModalDelete';
 
 const ManageStudents = (props) => {
     const { user, loginContext } = useContext(UserContext);
@@ -15,6 +16,11 @@ const ManageStudents = (props) => {
     const [showModal, setShowModal] = useState(false);
     const [selectedRoomId, setSelectedRoomId] = useState(null);
     const [selectedRent, setSelectedRent] = useState(null);
+
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [showModalDelete, setShowModalDelete] = useState(false);
+    const [selectedContractId, setSelectedContractId] = useState(null);
+    const [selectedDeleteRoomId, setSelectedDeleteRoomId] = useState(null);
 
     useEffect (() => {
         getHouses();
@@ -46,7 +52,32 @@ const ManageStudents = (props) => {
         } else {
             setListRooms([]);
         }
+        setSelectedRoomId(null);
+        setSelectedRent(null);
+        setSelectedContractId(null);
+        setSelectedDeleteRoomId(null);
     }
+
+    const handleDeleteContract = async () => {
+        try {
+            setIsDeleting(true);
+            let res = await deleteContract(selectedContractId, selectedDeleteRoomId);
+            if (res && res.EC === 0) {
+                toast.success(res.EM);
+                await getAllRooms(selectedHouseId);
+            } else {
+                toast.error(res.EM);
+            }
+        } catch (e) {
+            toast.error("Có lỗi xảy ra khi xóa hợp đồng!");
+            console.log(e);
+        } finally {
+            setIsDeleting(false);
+            setShowModalDelete(false);
+            setSelectedContractId(null);
+            setSelectedDeleteRoomId(null);
+        }
+    };
 
     return (
         <>
@@ -102,13 +133,18 @@ const ManageStudents = (props) => {
                                                     setSelectedRent(room.giaThue);
                                                     setShowModal(true);
                                                 }}
+                                                disabled={room.daChoThue}
                                             >
-                                                Thêm khách
+                                                {room.daChoThue ? "Đã cho thuê" : "Thêm khách"}
                                             </button>
 
                                             <div className="mb-2 d-flex align-items-center">
                                                 <i className="fa fa-user-circle-o me-2"></i>
-                                                <span>{room.ttPhongId || "Chưa có người thuê"}</span>
+                                                <span>
+                                                    {room.daChoThue
+                                                    ? `${room.sinhVienThue?.hoTen || 'Không rõ'}`
+                                                    : "Chưa có người thuê"}
+                                                </span>
                                             </div>
 
                                             <div className="mb-3 d-flex align-items-center">
@@ -118,7 +154,16 @@ const ManageStudents = (props) => {
 
                                             <div className="mt-auto d-flex justify-content-center gap-3">
                                                 <button className="btn btn-warning px-4 py-2">Sửa</button>
-                                                <button className="btn btn-danger px-4 py-2">Xóa</button>
+                                                <button className="btn btn-danger px-4 py-2"
+                                                    disabled={!room.daChoThue || !room.hopDongId}
+                                                    onClick={() => {
+                                                        setSelectedContractId(room.hopDongId);
+                                                        setSelectedDeleteRoomId(room.id);
+                                                        setShowModalDelete(true);
+                                                    }}
+                                                >
+                                                    Xóa
+                                                </button>
                                             </div>
                                         </div>
                                         </div>
@@ -145,6 +190,16 @@ const ManageStudents = (props) => {
                 rent={selectedRent}
                 user={user}
                 refreshRooms={() => getAllRooms(selectedHouseId)}
+            />
+
+            <ModalDelete
+                show={showModalDelete}
+                disabled={isDeleting}
+                handleClose={() => setShowModalDelete(false)}
+                confirmDelete={handleDeleteContract}
+                title="Xóa hợp đồng"
+                content={`Bạn có chắc chắn muốn xóa hợp đồng thuê của sinh viên "${
+                    listRooms.find(r => r.id === selectedDeleteRoomId)?.sinhVienThue?.hoTen || '(không rõ tên)'}" hay không?`}
             />
         </>
     );

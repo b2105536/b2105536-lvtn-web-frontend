@@ -195,7 +195,8 @@ const ModalRoom = (props) => {
                                 <label>Trạng thái (<span className='red'>*</span>):</label>
                                 <select className={validInputs.ttPhongId ? 'form-select' : 'form-select is-invalid'}
                                     onChange={(event) => handleOnChangeInput(event.target.value, 'ttPhongId')}
-                                    value={roomData.ttPhongId}>
+                                    value={roomData.ttPhongId}
+                                    disabled>
                                     {roomStates.length > 0 &&
                                         roomStates.map((item, index) => {
                                             return (
