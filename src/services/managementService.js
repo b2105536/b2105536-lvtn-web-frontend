@@ -21,9 +21,30 @@ const deleteContract = (hopDongId, phongId) => {
     });
 };
 
+// Services:
+const createServices = (services) => {
+    return axios.post('/api/v1/manage/service/create', [...services]);
+}
+
+const fetchAllServices = (page, limit) => {
+    return axios.get(`/api/v1/manage/service/read?page=${page}&limit=${limit}`);
+}
+
+const deleteService = (service) => {
+    return axios.delete('/api/v1/manage/service/delete', {data: {id: service.id}});
+}
+
+const updateCurrentService = (serviceData) => {
+    return axios.put('/api/v1/manage/service/update', {...serviceData});
+}
+
 export {
     fetchHousesByOwner,
     fetchRoom,
     createOrLinkTenant,
-    deleteContract
+    deleteContract,
+    createServices,
+    fetchAllServices,
+    deleteService,
+    updateCurrentService
 }

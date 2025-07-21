@@ -1,0 +1,32 @@
+.service-container {
+    .actions {
+        i {
+            padding-top: 7px;
+            padding-right: 7px;
+            font-size: 22px;
+            cursor: pointer;
+        }
+
+        .add {
+            color: green;
+        }
+
+        .delete {
+            color: red;
+        }
+
+        .save {
+            color: blue;
+        }
+        
+        .cancel {
+            color: gray;
+        }
+    }
+
+    .table-service {
+        i {
+            padding-right: 7px;
+        }
+    }
+}
