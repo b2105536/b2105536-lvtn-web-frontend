@@ -113,7 +113,7 @@ const Rooms = (props) => {
                                                             <td>{(currentPage - 1) * currentLimit + index + 1}</td>
                                                             <td>{item.id}</td>
                                                             <td>{item.tenPhong}</td>
-                                                            <td>{item.giaThue}</td>
+                                                            <td>{Number(item.giaThue)?.toLocaleString('vi-VN')}</td>
                                                             <td>{item.dienTich}</td>
                                                             <td>{item.sucChua}</td>
                                                             <td>{item.BangMa ? item.BangMa.giaTri : ''}</td>

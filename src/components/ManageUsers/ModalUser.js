@@ -172,6 +172,7 @@ const ModalUser = (props) => {
                     ...defaultUserData,
                     nhomId: userGroups && userGroups.length > 0 ? userGroups[0].id : ''
                 });
+                toast.success(res.EM);
             } 
             
             if (res && res.EC !== 0) {

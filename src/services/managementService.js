@@ -38,6 +38,23 @@ const updateCurrentService = (serviceData) => {
     return axios.put('/api/v1/manage/service/update', {...serviceData});
 }
 
+// Modal Service
+const fetchService = () => {
+    return axios.get('/api/v1/manage/service/read');
+}
+
+const fetchContract = () => {
+    return axios.get('/api/v1/manage/contract/read');
+}
+
+const fetchServicesByContract = (hopDongId) => {
+    return axios.get(`/api/v1/manage/service/by-contract/${hopDongId}`);
+}
+
+const assignServicesToContract = (data) => {
+    return axios.post('/api/v1/manage/service/assign', {data});
+}
+
 export {
     fetchHousesByOwner,
     fetchRoom,
@@ -46,5 +63,9 @@ export {
     createServices,
     fetchAllServices,
     deleteService,
-    updateCurrentService
+    updateCurrentService,
+    fetchService,
+    fetchContract,
+    fetchServicesByContract,
+    assignServicesToContract
 }

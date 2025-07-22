@@ -5,6 +5,7 @@ import { fetchHousesByOwner, fetchRoom, deleteContract } from '../../services/ma
 import { UserContext } from "../../context/UserContext";
 import ModalStudent from './ModalStudent';
 import ModalDelete from '../ManageUsers/ModalDelete';
+import ModalService from './ModalService';
 
 const ManageStudents = (props) => {
     const { user, loginContext } = useContext(UserContext);
@@ -16,6 +17,8 @@ const ManageStudents = (props) => {
     const [showModal, setShowModal] = useState(false);
     const [selectedRoomId, setSelectedRoomId] = useState(null);
     const [selectedRent, setSelectedRent] = useState(null);
+
+    const [showModalService, setShowModalService] = useState(false);
 
     const [isDeleting, setIsDeleting] = useState(false);
     const [showModalDelete, setShowModalDelete] = useState(false);
@@ -153,6 +156,15 @@ const ManageStudents = (props) => {
                                             </div>
 
                                             <div className="mt-auto d-flex justify-content-center gap-3">
+                                                <button className="btn btn-info px-4 py-2"
+                                                    disabled={!room.daChoThue || !room.hopDongId}
+                                                    onClick={() => {
+                                                        setSelectedContractId(room.hopDongId);
+                                                        setShowModalService(true);
+                                                    }}
+                                                >
+                                                    Gán
+                                                </button>
                                                 <button className="btn btn-warning px-4 py-2">Sửa</button>
                                                 <button className="btn btn-danger px-4 py-2"
                                                     disabled={!room.daChoThue || !room.hopDongId}
@@ -191,6 +203,14 @@ const ManageStudents = (props) => {
                 user={user}
                 refreshRooms={() => getAllRooms(selectedHouseId)}
             />
+
+            {showModalService && selectedContractId &&
+                <ModalService
+                    show={showModalService}
+                    handleClose={() => setShowModalService(false)}
+                    contractId={selectedContractId}
+                />
+            }
 
             <ModalDelete
                 show={showModalDelete}

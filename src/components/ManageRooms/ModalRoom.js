@@ -129,6 +129,7 @@ const ModalRoom = (props) => {
                     ttPhongId: roomStates && roomStates.length > 0 ? roomStates[0].id : '',    // Tạo mới cần nạp lại
                     nhaId: roomHouses && roomHouses.length > 0 ? roomHouses[0].id : ''         // Tạo mới cần nạp lại
                 });
+                toast.success(res.EM);
             } else {
                 toast.error(res.EM);
                 let _validInputs = _.cloneDeep(validDefaultInputs);
