@@ -68,6 +68,15 @@ const saveInvoice = (data) => {
     return axios.post('/api/v1/manage/invoice/create', { data });
 };
 
+// Modal Confirm Invoice
+const getInvoiceDataByContract = (hopDongId) => {
+    return axios.get(`/api/v1/manage/invoice/read/${hopDongId}`);
+};
+
+const saveInvoicePayment = (data) => {
+    return axios.post('/api/v1/manage/invoice/update', { data });
+};
+
 export {
     fetchHousesByOwner,
     fetchRoom,
@@ -83,5 +92,7 @@ export {
     assignServicesToContract,
     fetchInvoiceData,
     saveInvoice,
-    fetchShowInvoiceData
+    fetchShowInvoiceData,
+    getInvoiceDataByContract,
+    saveInvoicePayment
 }

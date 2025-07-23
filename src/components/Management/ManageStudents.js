@@ -8,6 +8,7 @@ import ModalDelete from '../ManageUsers/ModalDelete';
 import ModalService from './ModalService';
 import ModalInvoice from './ModalInvoice';
 import ModalShowInvoice from './ModalShowInvoice';
+import ModalConfirmInvoice from './ModalConfirmInvoice';
 
 const ManageStudents = (props) => {
     const { user, loginContext } = useContext(UserContext);
@@ -31,6 +32,9 @@ const ManageStudents = (props) => {
 
     // Modal Show Invoice
     const [showModalShowInvoice, setShowModalShowInvoice] = useState(false);
+
+    // Modal Confirm Invoice
+    const [showModalConfirm, setShowModalConfirm] = useState(false);
 
     // Modal Delete
     const [isDeleting, setIsDeleting] = useState(false);
@@ -263,8 +267,8 @@ const ManageStudents = (props) => {
                                                                     </button>
                                                                     <button className="btn btn-success px-4 py-2"
                                                                         onClick={() => {
-                                                                            // TODO: xử lý xác nhận thanh toán
-                                                                            toast.info("Chức năng xác nhận đang phát triển!");
+                                                                            setInvoiceHopDongId(room.hopDongId);
+                                                                            setShowModalConfirm(true);
                                                                         }}
                                                                     >
                                                                         Xác nhận
@@ -315,6 +319,12 @@ const ManageStudents = (props) => {
             <ModalShowInvoice
                 show={showModalShowInvoice}
                 onHide={() => setShowModalShowInvoice(false)}
+                hopDongId={invoiceHopDongId}
+            />
+
+            <ModalConfirmInvoice
+                show={showModalConfirm}
+                onHide={() => setShowModalConfirm(false)}
                 hopDongId={invoiceHopDongId}
             />
 

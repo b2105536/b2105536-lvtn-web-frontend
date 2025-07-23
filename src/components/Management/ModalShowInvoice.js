@@ -14,7 +14,6 @@ const ModalShowInvoice = (props) => {
             fetchShowInvoiceData(hopDongId).then(res => {
                 if (res?.EC === 0) {
                     setData(res.DT);
-                    console.log(res.DT)
 
                     const dienDV = res.DT.DichVus.find(dv => dv.tenDV.toLowerCase() === 'điện');
                     const nuocDV = res.DT.DichVus.find(dv => dv.tenDV.toLowerCase() === 'nước');
