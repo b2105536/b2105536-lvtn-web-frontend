@@ -12,4 +12,11 @@ const formatDateVN = (inputDate) => {
     return `${dd}/${mm}/${yyyy} ${hh}:${min}:${ss}`;
 };
 
-export {formatDateVN};
+const removeVietnameseTones = (str) => {
+    return str.normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/đ/g, "d").replace(/Đ/g, "D")
+        .toUpperCase();
+};
+
+export { formatDateVN, removeVietnameseTones };

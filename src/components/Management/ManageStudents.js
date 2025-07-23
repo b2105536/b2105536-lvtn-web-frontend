@@ -7,9 +7,12 @@ import ModalStudent from './ModalStudent';
 import ModalDelete from '../ManageUsers/ModalDelete';
 import ModalService from './ModalService';
 import ModalInvoice from './ModalInvoice';
+import ModalShowInvoice from './ModalShowInvoice';
 
 const ManageStudents = (props) => {
     const { user, loginContext } = useContext(UserContext);
+
+    const [activeTab, setActiveTab] = useState('rooms');
 
     const [houses, setHouses] = useState([]);
     const [listRooms, setListRooms] = useState([]);
@@ -25,6 +28,9 @@ const ManageStudents = (props) => {
     // Modal Invoice
     const [showInvoiceModal, setShowInvoiceModal] = useState(false);
     const [invoiceHopDongId, setInvoiceHopDongId] = useState(null);
+
+    // Modal Show Invoice
+    const [showModalShowInvoice, setShowModalShowInvoice] = useState(false);
 
     // Modal Delete
     const [isDeleting, setIsDeleting] = useState(false);
@@ -94,6 +100,11 @@ const ManageStudents = (props) => {
         setShowInvoiceModal(true);
     };
 
+    const handleShowInvoiceDetail = (hopDongId) => {
+        setInvoiceHopDongId(hopDongId);
+        setShowModalShowInvoice(true);
+    };
+
     return (
         <>
             <div className="container">
@@ -127,83 +138,149 @@ const ManageStudents = (props) => {
                             <div className="card-header">
                                 <ul className="nav nav-tabs card-header-tabs">
                                     <li className="nav-item">
-                                        <span className="nav-link active">Danh sách phòng</span>
+                                        <span
+                                            className={`nav-link ${activeTab === 'rooms' ? 'active' : ''}`}
+                                            onClick={() => setActiveTab('rooms')}
+                                            style={{ cursor: 'pointer' }}
+                                        >
+                                            Danh sách phòng
+                                        </span>
+                                    </li>
+                                    <li className="nav-item">
+                                        <span
+                                            className={`nav-link ${activeTab === 'payments' ? 'active' : ''}`}
+                                            onClick={() => setActiveTab('payments')}
+                                            style={{ cursor: 'pointer' }}
+                                        >
+                                            Thanh toán
+                                        </span>
                                     </li>
                                 </ul>
                             </div>
 
                             <div className="card-body">
-                                <div className="row">
-                                {listRooms.length > 0 ? (
-                                    listRooms.map((room, index) => (
-                                    <div className="col-md-6 col-lg-4 mb-4" key={index}>
-                                        <div className="card h-100 shadow-sm">
-                                        <div className="card-header bg-primary text-white">
-                                            <strong>{room.tenPhong}</strong>
-                                        </div>
-                                        <div className="card-body d-flex flex-column">
-                                            <button className="btn btn-outline-success mb-2"
-                                                onClick={() => {
-                                                    setSelectedRoomId(room.id);
-                                                    setSelectedRent(room.giaThue);
-                                                    setShowModal(true);
-                                                }}
-                                                disabled={room.daChoThue}
-                                            >
-                                                {room.daChoThue ? "Đã cho thuê" : "Thêm khách"}
-                                            </button>
-
-                                            <div className="mb-2 d-flex align-items-center">
-                                                <i className="fa fa-user-circle-o me-2"></i>
-                                                <span>
-                                                    {room.daChoThue
-                                                    ? `${room.sinhVienThue?.hoTen || 'Không rõ'}`
-                                                    : "Chưa có người thuê"}
-                                                </span>
+                                {activeTab === 'rooms' && (
+                                    <div className="row">
+                                    {listRooms.length > 0 ? (
+                                        listRooms.map((room, index) => (
+                                        <div className="col-md-6 col-lg-4 mb-4" key={index}>
+                                            <div className="card h-100 shadow-sm">
+                                            <div className="card-header bg-primary text-white">
+                                                <strong>{room.tenPhong}</strong>
                                             </div>
-
-                                            <div className="mb-3 d-flex align-items-center">
-                                                <i className="fa fa-money me-2"></i>
-                                                <span>{Number(room.giaThue)?.toLocaleString('vi-VN')} VNĐ</span>
-                                            </div>
-
-                                            <div className="mt-auto d-flex justify-content-center gap-3">
-                                                <button className="btn btn-info px-4 py-2"
-                                                    disabled={!room.daChoThue || !room.hopDongId}
+                                            <div className="card-body d-flex flex-column">
+                                                <button className="btn btn-outline-success mb-2"
                                                     onClick={() => {
-                                                        setSelectedContractId(room.hopDongId);
-                                                        setShowModalService(true);
+                                                        setSelectedRoomId(room.id);
+                                                        setSelectedRent(room.giaThue);
+                                                        setShowModal(true);
                                                     }}
+                                                    disabled={room.daChoThue}
                                                 >
-                                                    Gán
+                                                    {room.daChoThue ? "Đã cho thuê" : "Thêm khách"}
                                                 </button>
-                                                <button className="btn btn-light px-4 py-2"
-                                                    disabled={!room.daChoThue || !room.hopDongId}
-                                                    onClick={() => handleShowInvoice(room.hopDongId)}
-                                                >
-                                                    Báo giá
-                                                </button>
-                                                <button className="btn btn-danger px-4 py-2"
-                                                    disabled={!room.daChoThue || !room.hopDongId}
-                                                    onClick={() => {
-                                                        setSelectedContractId(room.hopDongId);
-                                                        setSelectedDeleteRoomId(room.id);
-                                                        setShowModalDelete(true);
-                                                    }}
-                                                >
-                                                    Xóa
-                                                </button>
+
+                                                <div className="mb-2 d-flex align-items-center">
+                                                    <i className="fa fa-user-circle-o me-2"></i>
+                                                    <span>
+                                                        {room.daChoThue
+                                                        ? `${room.sinhVienThue?.hoTen || 'Không rõ'}`
+                                                        : "Chưa có người thuê"}
+                                                    </span>
+                                                </div>
+
+                                                <div className="mb-3 d-flex align-items-center">
+                                                    <i className="fa fa-money me-2"></i>
+                                                    <span>{Number(room.giaThue)?.toLocaleString('vi-VN')} VNĐ</span>
+                                                </div>
+
+                                                <div className="mt-auto d-flex justify-content-center gap-3">
+                                                    <button className="btn btn-info px-4 py-2"
+                                                        disabled={!room.daChoThue || !room.hopDongId}
+                                                        onClick={() => {
+                                                            setSelectedContractId(room.hopDongId);
+                                                            setShowModalService(true);
+                                                        }}
+                                                    >
+                                                        Gán
+                                                    </button>
+                                                    <button className="btn btn-light px-4 py-2"
+                                                        disabled={!room.daChoThue || !room.hopDongId}
+                                                        onClick={() => handleShowInvoice(room.hopDongId)}
+                                                    >
+                                                        Báo giá
+                                                    </button>
+                                                    <button className="btn btn-danger px-4 py-2"
+                                                        disabled={!room.daChoThue || !room.hopDongId}
+                                                        onClick={() => {
+                                                            setSelectedContractId(room.hopDongId);
+                                                            setSelectedDeleteRoomId(room.id);
+                                                            setShowModalDelete(true);
+                                                        }}
+                                                    >
+                                                        Xóa
+                                                    </button>
+                                                </div>
+                                            </div>
                                             </div>
                                         </div>
+                                        ))
+                                    ) : (
+                                        <div className="col-12">
+                                            <p>Không có phòng nào để hiển thị.</p>
                                         </div>
-                                    </div>
-                                    ))
-                                ) : (
-                                    <div className="col-12">
-                                    <p>Không có phòng nào để hiển thị.</p>
+                                    )}
                                     </div>
                                 )}
-                                </div>
+
+                                {activeTab === 'payments' && (
+                                    <div className="row">
+                                        {listRooms.length > 0 ? (
+                                            listRooms
+                                                .filter(room => room.daChoThue && room.hopDongId)
+                                                .map((room, index) => (
+                                                    <div className="col-md-6 col-lg-4 mb-4" key={index}>
+                                                        <div className="card h-100 shadow-sm">
+                                                            <div className="card-header bg-secondary text-white">
+                                                                <strong>{room.tenPhong}</strong>
+                                                            </div>
+                                                            <div className="card-body d-flex flex-column">
+                                                                <div className="mb-2 d-flex align-items-center">
+                                                                    <i className="fa fa-user-circle-o me-2"></i>
+                                                                    <span>{room.sinhVienThue?.hoTen || 'Không rõ'}</span>
+                                                                </div>
+
+                                                                <div className="mb-3 d-flex align-items-center">
+                                                                    <i className="fa fa-money me-2"></i>
+                                                                    <span>{Number(room.giaThue)?.toLocaleString('vi-VN')} VNĐ</span>
+                                                                </div>
+
+                                                                <div className="mt-auto d-flex justify-content-center gap-3">
+                                                                    <button className="btn btn-outline-primary px-4 py-2"
+                                                                        onClick={() => handleShowInvoiceDetail(room.hopDongId)}
+                                                                    >
+                                                                        Xem giấy báo
+                                                                    </button>
+                                                                    <button className="btn btn-success px-4 py-2"
+                                                                        onClick={() => {
+                                                                            // TODO: xử lý xác nhận thanh toán
+                                                                            toast.info("Chức năng xác nhận đang phát triển!");
+                                                                        }}
+                                                                    >
+                                                                        Xác nhận
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))
+                                        ) : (
+                                            <div className="col-12">
+                                                <p>Không có thông tin thanh toán.</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -232,6 +309,12 @@ const ManageStudents = (props) => {
             <ModalInvoice
                 show={showInvoiceModal}
                 onHide={() => setShowInvoiceModal(false)}
+                hopDongId={invoiceHopDongId}
+            />
+
+            <ModalShowInvoice
+                show={showModalShowInvoice}
+                onHide={() => setShowModalShowInvoice(false)}
                 hopDongId={invoiceHopDongId}
             />
 

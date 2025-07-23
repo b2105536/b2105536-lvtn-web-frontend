@@ -60,6 +60,10 @@ const fetchInvoiceData = (hopDongId) => {
     return axios.get(`/api/v1/manage/invoice/by-contract/${hopDongId}`);
 };
 
+const fetchShowInvoiceData = (hopDongId) => {
+    return axios.get(`/api/v1/manage/invoice/show/${hopDongId}`);
+};
+
 const saveInvoice = (data) => {
     return axios.post('/api/v1/manage/invoice/create', { data });
 };
@@ -78,5 +82,6 @@ export {
     fetchServicesByContract,
     assignServicesToContract,
     fetchInvoiceData,
-    saveInvoice
+    saveInvoice,
+    fetchShowInvoiceData
 }
