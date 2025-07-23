@@ -55,6 +55,15 @@ const assignServicesToContract = (data) => {
     return axios.post('/api/v1/manage/service/assign', {data});
 }
 
+// Modal Invoice
+const fetchInvoiceData = (hopDongId) => {
+    return axios.get(`/api/v1/manage/invoice/by-contract/${hopDongId}`);
+};
+
+const saveInvoice = (data) => {
+    return axios.post('/api/v1/manage/invoice/create', { data });
+};
+
 export {
     fetchHousesByOwner,
     fetchRoom,
@@ -67,5 +76,7 @@ export {
     fetchService,
     fetchContract,
     fetchServicesByContract,
-    assignServicesToContract
+    assignServicesToContract,
+    fetchInvoiceData,
+    saveInvoice
 }

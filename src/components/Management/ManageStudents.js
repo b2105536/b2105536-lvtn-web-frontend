@@ -6,6 +6,7 @@ import { UserContext } from "../../context/UserContext";
 import ModalStudent from './ModalStudent';
 import ModalDelete from '../ManageUsers/ModalDelete';
 import ModalService from './ModalService';
+import ModalInvoice from './ModalInvoice';
 
 const ManageStudents = (props) => {
     const { user, loginContext } = useContext(UserContext);
@@ -18,8 +19,14 @@ const ManageStudents = (props) => {
     const [selectedRoomId, setSelectedRoomId] = useState(null);
     const [selectedRent, setSelectedRent] = useState(null);
 
+    // Modal Service
     const [showModalService, setShowModalService] = useState(false);
 
+    // Modal Invoice
+    const [showInvoiceModal, setShowInvoiceModal] = useState(false);
+    const [invoiceHopDongId, setInvoiceHopDongId] = useState(null);
+
+    // Modal Delete
     const [isDeleting, setIsDeleting] = useState(false);
     const [showModalDelete, setShowModalDelete] = useState(false);
     const [selectedContractId, setSelectedContractId] = useState(null);
@@ -80,6 +87,11 @@ const ManageStudents = (props) => {
             setSelectedContractId(null);
             setSelectedDeleteRoomId(null);
         }
+    };
+
+    const handleShowInvoice = (hopDongId) => {
+        setInvoiceHopDongId(hopDongId);
+        setShowInvoiceModal(true);
     };
 
     return (
@@ -165,7 +177,12 @@ const ManageStudents = (props) => {
                                                 >
                                                     Gán
                                                 </button>
-                                                <button className="btn btn-warning px-4 py-2">Sửa</button>
+                                                <button className="btn btn-light px-4 py-2"
+                                                    disabled={!room.daChoThue || !room.hopDongId}
+                                                    onClick={() => handleShowInvoice(room.hopDongId)}
+                                                >
+                                                    Báo giá
+                                                </button>
                                                 <button className="btn btn-danger px-4 py-2"
                                                     disabled={!room.daChoThue || !room.hopDongId}
                                                     onClick={() => {
@@ -211,6 +228,12 @@ const ManageStudents = (props) => {
                     contractId={selectedContractId}
                 />
             }
+
+            <ModalInvoice
+                show={showInvoiceModal}
+                onHide={() => setShowInvoiceModal(false)}
+                hopDongId={invoiceHopDongId}
+            />
 
             <ModalDelete
                 show={showModalDelete}
