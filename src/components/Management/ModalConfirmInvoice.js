@@ -11,21 +11,23 @@ const ModalConfirmInvoice = (props) => {
 
     useEffect(() => {
         if (hopDongId && show) {
+            setInvoice(null);
+            setSoTienDaTra('');
+            setGhiChuHD('');
             fetchInvoiceData();
         }
     }, [hopDongId, show]);
 
     const fetchInvoiceData = async () => {
         const res = await getInvoiceDataByContract(hopDongId);
-        if (res && res.EC === 0) {
+        
+        if (res && res.EC === 0 && res.DT?.hoaDon) {
             setInvoice(res.DT);
-            const lastInvoice = res.DT.HoaDons?.[0];
-            if (lastInvoice) {
-                setSoTienDaTra(lastInvoice.soTienDaTra || '');
-                setGhiChuHD(lastInvoice.ghiChuHD || '');
-            }
+            setSoTienDaTra(res.DT.hoaDon.soTienDaTra || '');
+            setGhiChuHD(res.DT.hoaDon.ghiChuHD || '');
         } else {
-            toast.error(res.EM);
+            setInvoice(null);
+            toast.info("Không có hóa đơn nào chưa thanh toán.");
         }
     };
 
@@ -35,7 +37,7 @@ const ModalConfirmInvoice = (props) => {
             return;
         }
 
-        const invoiceToUpdate = invoice.HoaDons?.[0];
+        const invoiceToUpdate = invoice?.hoaDon;
         if (!invoiceToUpdate) {
             toast.error("Không tìm thấy hóa đơn để cập nhật.");
             return;
@@ -58,7 +60,7 @@ const ModalConfirmInvoice = (props) => {
         }
     };
 
-    const invoiceInfo = invoice?.HoaDons?.[0];
+    const invoiceInfo = invoice?.hoaDon;
 
     return (
         <Modal show={show} onHide={onHide} centered>
