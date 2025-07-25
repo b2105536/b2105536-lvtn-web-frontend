@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 import { Card, Button } from 'react-bootstrap';
 import { UserContext } from "../../context/UserContext";
-import { getPaymentInfo } from '../../services/paymentService';
+import { getPaymentInfo, createZaloPayOrder } from '../../services/paymentService';
 import { removeVietnameseTones } from '../../utils/invoiceHelper';
 
 const Payment = (props) => {
@@ -19,6 +19,30 @@ const Payment = (props) => {
         fetchData();
     }, []);
 
+    const handlePayment= async () => {
+        try {
+            const tongTien = Number(data.giaThue) +
+                data.DichVus.reduce((acc, dv) => {
+                    const isDienNuoc = dv.tenDV.toLowerCase().includes('điện') || dv.tenDV.toLowerCase().includes('nước');
+                    const soLuong = isDienNuoc ? dv.csSauGanNhat - dv.csTrcGanNhat : 1;
+                    return acc + soLuong * Number(dv.donGia);
+                }, 0);
+
+            const res = await createZaloPayOrder(tongTien, user.account.email, data.hoaDonGanNhat.id);
+
+            if (res && res.EC === 0) {
+                const orderUrl = res.DT.order_url;
+                window.location.href = orderUrl;
+            } else {
+                alert(res.data.EM || 'Tạo đơn hàng thất bại');
+            }
+        } catch (error) {
+            console.error('Thanh toán ZaloPay error:', error);
+            alert('Có lỗi xảy ra khi thanh toán');
+        }
+    };
+
+
     return (
         <div className='container'>
             <div className='payment-container'>
@@ -29,7 +53,7 @@ const Payment = (props) => {
                     <div className='payment-body'>
                         {data.hoaDonGanNhat && data.hoaDonGanNhat.soTienDaTra >= data.hoaDonGanNhat.tongTienPhaiTra ? (
                             <>
-                                <h5>Hóa đơn</h5><hr />
+                                <h5>Hóa đơn</h5>
                                 <Card className="mb-3">
                                     <Card.Body>
                                         <Card.Title>Hóa đơn tháng {new Date(data.ngayGN).getMonth() + 1}/{new Date(data.ngayGN).getFullYear()}</Card.Title>
@@ -84,7 +108,7 @@ const Payment = (props) => {
                                             </p>
                                         </div>
 
-                                        <Button variant="primary">Thanh toán</Button>
+                                        <Button variant="primary" onClick={handlePayment}>Thanh toán với ZaloPay</Button>
                                     </Card.Body>
                                 </Card>
                             </>
