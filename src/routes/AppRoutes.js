@@ -13,6 +13,7 @@ import Rooms from "../components/ManageRooms/Rooms";
 import ManageStudents from "../components/Management/ManageStudents";
 import ManageServices from "../components/Management/ManageServices";
 import Payment from "../components/Payment/Payment";
+import Invoices from "../components/Invoice/Invoices";
 
 const AppRoutes = (props) => {
     return (
@@ -27,6 +28,7 @@ const AppRoutes = (props) => {
             <PrivateRoutes path="/manage/student" component={ManageStudents} />
             <PrivateRoutes path="/manage/service" component={ManageServices} />
             <PrivateRoutes path="/payment" component={Payment} />
+            <PrivateRoutes path="/invoices" component={Invoices} />
             
             <Route path="/login">
               <Login />

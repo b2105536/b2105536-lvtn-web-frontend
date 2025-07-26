@@ -57,6 +57,7 @@ const NavHeader = (props) => {
                     return (
                         <>
                             <NavLink to="/" className="nav-link">TRANG CHỦ</NavLink>
+                            <NavLink to="/invoices" className="nav-link">HÓA ĐƠN</NavLink>
                             <NavLink to="/payment" className="nav-link">THANH TOÁN</NavLink>
                             <NavLink to="/about" className="nav-link">GIỚI THIỆU</NavLink>
                         </>

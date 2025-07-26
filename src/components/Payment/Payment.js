@@ -53,7 +53,7 @@ const Payment = (props) => {
                     <div className='payment-body'>
                         {data.hoaDonGanNhat && data.hoaDonGanNhat.soTienDaTra >= data.hoaDonGanNhat.tongTienPhaiTra ? (
                             <>
-                                <h5>Hóa đơn</h5>
+                                <h5>Hóa đơn vừa thanh toán</h5>
                                 <Card className="mb-3">
                                     <Card.Body>
                                         <Card.Title>Hóa đơn tháng {new Date(data.ngayGN).getMonth() + 1}/{new Date(data.ngayGN).getFullYear()}</Card.Title>

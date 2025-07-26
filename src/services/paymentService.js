@@ -12,7 +12,17 @@ const createZaloPayOrder = async (amount, email, hoaDonId) => {
     });
 };
 
+const fetchAllInvoices = (email) => {
+    return axios.get(`/api/v1/invoice/read?email=${email}`);
+};
+
+const fetchDetailInvoice = (hoaDonId) => {
+    return axios.get(`/api/v1/invoice/${hoaDonId}`);
+}
+
 export {
     getPaymentInfo,
-    createZaloPayOrder
+    createZaloPayOrder,
+    fetchAllInvoices,
+    fetchDetailInvoice
 }
