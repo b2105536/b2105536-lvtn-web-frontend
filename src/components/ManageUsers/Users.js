@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react';
 import './Users.scss';
-import { fetchAllUsers, deleteUser } from '../../services/userService';
+import { fetchAllUsers, deleteUser, fetchGroup } from '../../services/userService';
 import ReactPaginate from 'react-paginate';
 import { toast } from 'react-toastify';
 import ModalDelete from './ModalDelete';
 import ModalUser from './ModalUser';
 
 const Users = (props) => {
+    const [listGroups, setListGroups] = useState([]);
+    const [selectedGroup, setSelectedGroup] = useState('ALL');
+
     const [listUsers, setListUsers] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [currentLimit, setCurrentLimit] = useState(5);
@@ -21,17 +24,28 @@ const Users = (props) => {
     const [actionModalUser, setActionModalUser] = useState("CREATE");
     const [dataModalUser, setDataModalUser] = useState({});
 
+    useEffect(() => {
+        fetchGroups();
+    }, []);
+
+    const fetchGroups = async () => {
+        let res = await fetchGroup();
+        if (res && res.EC === 0) {
+            setListGroups(res.DT);
+        }
+    };
+
     useEffect (() => {
         fetchUsers() ;
-    }, [currentPage]);
+    }, [currentPage, selectedGroup]);
 
     const fetchUsers = async () => {
-        let response = await fetchAllUsers(currentPage, currentLimit);
+        let response = await fetchAllUsers(currentPage, currentLimit, selectedGroup);
         if (response && response.EC === 0) {
             setTotalPages(response.DT.totalPages);
             setListUsers(response.DT.users);
         }
-    }
+    };
 
     const handlePageClick = async (event) => {
         setCurrentPage(+event.selected + 1);
@@ -92,7 +106,24 @@ const Users = (props) => {
                                     setIsShowModalUser(true);
                                     setActionModalUser("CREATE");
                                 }}
-                            ><i className="fa fa-plus-circle"></i>Thêm người dùng</button>
+                            ><i className="fa fa-plus-circle"></i>Thêm người dùng
+                            </button>
+                            <div className="filter-row my-3">
+                                <div className="row">
+                                    <div className="col-md-3">
+                                        <select
+                                            className="form-select"
+                                            value={selectedGroup}
+                                            onChange={(e) => setSelectedGroup(e.target.value)}
+                                        >
+                                            <option value="ALL">Tất cả nhóm</option>
+                                            {listGroups.map((group) => (
+                                                <option key={group.id} value={group.id}>{group.tenNhom}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div className='user-body'>

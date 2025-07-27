@@ -13,8 +13,8 @@ const loginUser = (valueLogin, matKhau) => {
     });
 }
 
-const fetchAllUsers = (page, limit) => {
-    return axios.get(`/api/v1/user/read?page=${page}&limit=${limit}`);
+const fetchAllUsers = (page, limit, nhomId = 'ALL') => {
+    return axios.get(`/api/v1/user/read?page=${page}&limit=${limit}&nhomId=${nhomId}`);
 }
 
 const deleteUser = (user) => {
