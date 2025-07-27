@@ -46,7 +46,7 @@ const Invoices = (props) => {
             <div className='container'>
                 <div className='invoice-container'>
                     <div className='invoice-title mt-3'>
-                        <h3>Danh Sách Hóa Đơn</h3><hr />
+                        <h3>Danh sách hóa đơn</h3><hr />
                     </div>
                     {invoices.length === 0 ? (
                         <p>Không có hóa đơn nào.</p>

@@ -1,8 +1,8 @@
 import { Modal, Button } from 'react-bootstrap';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { formatDateVN, removeVietnameseTones } from '../../utils/invoiceHelper';
 import { fetchDetailInvoice } from '../../services/paymentService';
-
+import html2pdf from 'html2pdf.js';
 
 const ModalDetailInvoice = (props) => {
     const { show, onHide, hoaDonId } = props;
@@ -10,6 +10,8 @@ const ModalDetailInvoice = (props) => {
     const [data, setData] = useState(null);
     const [dien, setDien] = useState({ csTrc: 0, csSau: 0 });
     const [nuoc, setNuoc] = useState({ csTrc: 0, csSau: 0 });
+
+    const contentRef = useRef();
 
     useEffect(() => {
         if (hoaDonId) {
@@ -51,6 +53,29 @@ const ModalDetailInvoice = (props) => {
         return tong;
     };
 
+    const handlePrint = () => {
+        const printContent = contentRef.current.innerHTML;
+        const newWin = window.open('', '', 'width=800,height=600');
+        newWin.document.write(`<html><head><title>Biên nhận thanh toán</title>`);
+        newWin.document.write(`<style>body{font-family:Arial;padding:20px;}</style></head><body>`);
+        newWin.document.write(printContent);
+        newWin.document.write('</body></html>');
+        newWin.document.close();
+        newWin.print();
+    };
+
+    const handleDownloadPDF = () => {
+        const element = contentRef.current;
+        const opt = {
+            margin:       0.5,
+            filename:     `hoa-don-${hoaDonId}.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2 },
+            jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+        html2pdf().set(opt).from(element).save();
+    };
+
     return (
         <Modal show={show} onHide={onHide} size="lg">
             <Modal.Header closeButton>
@@ -63,16 +88,21 @@ const ModalDetailInvoice = (props) => {
             </Modal.Header>
             <Modal.Body>
                 {data ? (
-                    <>
-                        <div className="mb-2 d-flex justify-content-between">
+                    <div ref={contentRef} style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
+                        <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                            <h3 style={{ margin: 0 }}>HÓA ĐƠN TIỀN TRỌ</h3>
+                            <div style={{ fontSize: '14px', color: '#555' }}>{data.ten} - SĐT: {data.soDienThoai}</div>
+                            <hr />
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
                             <strong>Phòng: {data.tenPhong}</strong>
                             <strong>Kỳ: {new Date(data.ngayTao).getMonth() + 1}/{new Date(data.ngayTao).getFullYear()}</strong>
                             <strong>Số: {data.hoaDonId}</strong>
                         </div>
-                        <div className="mb-2">
+                        <div style={{ marginBottom: '10px' }}>
                             <strong>Sinh viên: {removeVietnameseTones(data.hoTen)}</strong>
                         </div>
-                        <div className="mb-2 d-flex justify-content-between">
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                             Tiền thuê phòng:
                             <span>{Number(data.giaThue).toLocaleString('vi-VN')} VNĐ</span>
                         </div>
@@ -96,17 +126,17 @@ const ModalDetailInvoice = (props) => {
                                     : donGia;
         
                             return (
-                                <div key={idx} className="mb-3">
-                                    <div className="d-flex justify-content-between align-items-center">
+                                <div key={idx} style={{ marginBottom: '12px' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                         <div>
                                             {idx + 1}. {dv.tenDV}
                                             {isDien || isNuoc ? (
-                                                <span className="ms-2 text-muted small">
-                                                    ( Sử dụng: {soLuong} x {donGia.toLocaleString('vi-VN')} = {thanhTien.toLocaleString('vi-VN')} VNĐ )
+                                                <span style={{ fontSize: '12px', color: '#666' }}>
+                                                    &nbsp;( Sử dụng: {soLuong} x {donGia.toLocaleString('vi-VN')} = {thanhTien.toLocaleString('vi-VN')} VNĐ )
                                                 </span>
                                             ) : (
-                                                <span className="ms-2 text-muted small">
-                                                    ( Đơn giá: {donGia.toLocaleString('vi-VN')} VNĐ )
+                                                <span style={{ fontSize: '12px', color: '#666' }}>
+                                                    &nbsp;( Đơn giá: {donGia.toLocaleString('vi-VN')} VNĐ )
                                                 </span>
                                             )}
                                         </div>
@@ -116,45 +146,43 @@ const ModalDetailInvoice = (props) => {
                                     </div>
         
                                     {(isDien || isNuoc) && (
-                                        <div className="row mt-2">
-                                            <div className="col-6 col-md-3">
-                                                <div>Chỉ số trước: <strong>{isDien ? dien.csTrc : nuoc.csTrc}</strong></div>
-                                            </div>
-                                            <div className="col-6 col-md-3">
-                                                <div>Chỉ số sau: <strong>{isDien ? dien.csSau : nuoc.csSau}</strong></div>
-                                            </div>
+                                        <div style={{ fontSize: '14px', color: '#555', marginLeft: '16px' }}>
+                                            Chỉ số trước: <strong>{isDien ? dien.csTrc : nuoc.csTrc}</strong>,
+                                            Chỉ số sau: <strong>{isDien ? dien.csSau : nuoc.csSau}</strong>
                                         </div>
                                     )}
                                 </div>
                             );
                         })}
                         <hr />
-                        <div className="d-flex justify-content-between">
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <strong>Tổng tiền phải trả:</strong>
                             <strong>{tinhTong().toLocaleString('vi-VN')} VNĐ</strong>
                         </div>
-                        <div className="d-flex justify-content-between">
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <strong>Số tiền đã trả:</strong>
                             <strong>{Number(data.soTienDaTra).toLocaleString('vi-VN')} VNĐ</strong>
                         </div>
-                        <div className="d-flex justify-content-between">
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <strong>Còn lại:</strong>
                             <strong>{Number(data.tienDuThangTrc).toLocaleString('vi-VN')} VNĐ</strong>
                         </div>
-                        <div className="text-muted small">
-                            (Ghi chú: {data.ghiChuHD})
-                        </div>
-                        <div className="mt-2 d-flex justify-content-between">
+                        {data.ghiChuHD && (
+                            <div style={{ fontSize: '13px', color: '#555', marginTop: '5px' }}>
+                                (Ghi chú: {data.ghiChuHD})
+                            </div>
+                        )}
+                        <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'space-between' }}>
                             <strong>Ngày tạo:</strong>
                             <strong>{formatDateVN(data.ngayTao)}</strong>
                         </div>
-                    </>
+                    </div>
                 ) : <p>Đang tải dữ liệu...</p>}
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="secondary" onClick={onHide}><i className="fa fa-close me-1"></i>Đóng</Button>
-                <Button variant="warning" onClick={onHide}><i className="fa fa-save me-1"></i>Lưu trữ</Button>
-                <Button variant="primary" onClick={onHide}><i className="fa fa-print me-1"></i>In hóa đơn</Button>
+                <Button variant="warning" onClick={() => handleDownloadPDF()}><i className="fa fa-save me-1"></i>Lưu trữ</Button>
+                <Button variant="primary" onClick={() => handlePrint()}><i className="fa fa-print me-1"></i>In hóa đơn</Button>
             </Modal.Footer>
         </Modal>
     );
