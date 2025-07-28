@@ -1,8 +1,16 @@
 import axios from '../setup/axios';
 
-
-const fetchAllRooms = (page, limit) => {
-    return axios.get(`/api/v1/room/read?page=${page}&limit=${limit}`);
+const fetchAllRooms = (page, limit, nhaId = 'ALL', ttPhongId = 'ALL', giaThueTu = '', giaThueDen = '') => {
+    return axios.get(`/api/v1/room/read`, {
+        params: {
+            page,
+            limit,
+            nhaId,
+            ttPhongId,
+            giaThueTu,
+            giaThueDen
+        }
+    });
 }
 
 const deleteRoom = (room) => {
@@ -25,11 +33,21 @@ const updateCurrentRoom = (roomData) => {
     return axios.put('api/v1/room/update', {...roomData});
 }
 
+const fetchRoomStatus = () => {
+    return axios.get('/api/v1/allcode/stat-rooms');
+}
+
+const fetchRentRange = () => {
+    return axios.get('/api/v1/room/rent-range');
+}
+
 export {
     fetchAllRooms,
     deleteRoom,
     fetchHouse,
     fetchState,
     createNewRoom,
-    updateCurrentRoom
+    updateCurrentRoom,
+    fetchRoomStatus,
+    fetchRentRange
 };

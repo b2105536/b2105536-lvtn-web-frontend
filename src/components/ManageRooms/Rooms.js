@@ -1,12 +1,19 @@
 import { useEffect, useState } from 'react';
 import './Rooms.scss';
-import { deleteRoom, fetchAllRooms } from '../../services/roomService';
+import { deleteRoom, fetchAllRooms, fetchHouse, fetchRoomStatus, fetchRentRange } from '../../services/roomService';
 import ReactPaginate from 'react-paginate';
 import { toast } from 'react-toastify';
 import ModalDelete from '../ManageUsers/ModalDelete';
 import ModalRoom from './ModalRoom';
 
 const Rooms = (props) => {
+    const [listHouses, setListHouses] = useState([]);
+    const [selectedHouse, setSelectedHouse] = useState('ALL');
+    const [listRoomStatuses, setListRoomStatuses] = useState([]);
+    const [selectedRoomStatus, setSelectedRoomStatus] = useState('ALL');
+    const [listRentRanges, setListRentRanges] = useState([]);
+    const [selectedRange, setSelectedRange] = useState('');
+
     const [listRooms, setListRooms] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [currentLimit, setCurrentLimit] = useState(5);
@@ -19,17 +26,65 @@ const Rooms = (props) => {
     const [actionModalRoom, setActionModalRoom] = useState("CREATE");
     const [dataModalRoom, setDataModalRoom] = useState({});
 
+    useEffect(() => {
+        fetchHouses();
+    }, []);
+
+    const fetchHouses = async () => {
+        let res = await fetchHouse();
+        if (res && res.EC === 0) {
+            setListHouses(res.DT);
+        }
+    };
+
+    useEffect(() => {
+        fetchRoomStatuses();
+    }, []);
+
+    const fetchRoomStatuses = async () => {
+        let res = await fetchRoomStatus();
+        if (res && res.EC === 0) {
+            setListRoomStatuses(res.DT);
+        }
+    };
+
+    useEffect(() => {
+        fetchRentRanges();
+    }, []);
+
+    const fetchRentRanges = async () => {
+        let res = await fetchRentRange();
+        if (res && res.EC === 0) {
+            setListRentRanges(res.DT);
+        }
+    };
+
     useEffect (() => {
         fetchRooms();
-    }, [currentPage]);
+    }, [currentPage, selectedHouse, selectedRoomStatus, selectedRange]);
 
     const fetchRooms = async () => {
-        let response = await fetchAllRooms(currentPage, currentLimit);
+        let giaThueTu = '';
+        let giaThueDen = '';
+
+        if (selectedRange && selectedRange !== 'ALL') {
+            try {
+                const parsed = JSON.parse(selectedRange);
+                giaThueTu = parsed.giaThueTu;
+                giaThueDen = parsed.giaThueDen;
+            } catch (error) {
+                console.error("Lỗi parse khoảng giá:", error);
+            }
+        }
+
+        let response = await fetchAllRooms(
+            currentPage, currentLimit, selectedHouse, selectedRoomStatus, giaThueTu, giaThueDen
+        );
         if (response && response.EC === 0) {
             setTotalPages(response.DT.totalPages);
             setListRooms(response.DT.rooms);
         }
-    }
+    };
 
     const handlePageClick = async (event) => {
         setCurrentPage(+event.selected + 1);
@@ -69,6 +124,13 @@ const Rooms = (props) => {
         setIsShowModalRoom(true);
     }
 
+    const handleRefresh = () => {
+        setSelectedHouse('ALL');
+        setSelectedRoomStatus('ALL');
+        setSelectedRange('');
+        setCurrentPage(1);
+    };
+
     return (
         <>
             <div className='container'>
@@ -78,7 +140,7 @@ const Rooms = (props) => {
                             <h3>Danh Sách Phòng Trọ</h3>
                         </div>
                         <div className='actions my-3'>
-                            <button className='btn btn-success refresh'>
+                            <button className='btn btn-success refresh' onClick={() => handleRefresh()}>
                                     <i className="fa fa-refresh"></i>Làm mới
                             </button>
                             <button className='btn btn-primary'
@@ -88,6 +150,49 @@ const Rooms = (props) => {
                                 }}>
                                 <i className="fa fa-plus-circle"></i>Thêm phòng trọ
                             </button>
+                            <div className="filter-row my-3">
+                                <div className="row">
+                                    <div className="col-md-2">
+                                        <select
+                                            className="form-select"
+                                            value={selectedHouse}
+                                            onChange={(e) => setSelectedHouse(e.target.value)}
+                                        >
+                                            <option value="ALL">Tất cả nhà</option>
+                                            {listHouses.map((house) => (
+                                                <option key={house.id} value={house.id}>{house.ten}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="col-md-2">
+                                        <select
+                                            className="form-select"
+                                            value={selectedRange}
+                                            onChange={(e) => setSelectedRange(e.target.value)}
+                                        >
+                                            <option value="ALL">Tất cả khoảng giá</option>
+                                            {listRentRanges.map((range) => (
+                                                <option
+                                                    key={range.id}
+                                                    value={JSON.stringify({ giaThueTu: range.giaThueTu, giaThueDen: range.giaThueDen })}
+                                                >{range.label}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="col-md-2">
+                                        <select
+                                            className="form-select"
+                                            value={selectedRoomStatus}
+                                            onChange={(e) => setSelectedRoomStatus(e.target.value)}
+                                        >
+                                            <option value="ALL">Tất cả trạng thái</option>
+                                            {listRoomStatuses.map((stat) => (
+                                                <option key={stat.id} value={stat.id}>{stat.giaTri}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div className='room-body'>

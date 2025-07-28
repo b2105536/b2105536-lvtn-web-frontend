@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react';
 import './Houses.scss';
-import { fetchAllHouses, deleteHouse } from '../../services/houseService';
+import { fetchAllHouses, deleteHouse, fetchUser } from '../../services/houseService';
 import ReactPaginate from 'react-paginate';
 import { toast } from 'react-toastify';
 import ModalDelete from '../ManageUsers/ModalDelete';
 import ModalHouse from './ModalHouse';
 
 const Houses = (props) => {
+    const [listLandlords, setListLandlords] = useState([]);
+    const [selectedLandlord, setSelectedLandlord] = useState('ALL');
+
     const [listHouses, setListHouses] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [currentLimit, setCurrentLimit] = useState(5);
@@ -21,17 +24,28 @@ const Houses = (props) => {
     const [actionModalHouse, setActionModalHouse] = useState("CREATE");
     const [dataModalHouse, setDataModalHouse] = useState({});
 
+    useEffect(() => {
+        fetchLandlords();
+    }, []);
+
+    const fetchLandlords = async () => {
+        let res = await fetchUser();
+        if (res && res.EC === 0) {
+            setListLandlords(res.DT);
+        }
+    };
+
     useEffect (() => {
         fetchHouses() ;
-    }, [currentPage]);
+    }, [currentPage, selectedLandlord]);
 
     const fetchHouses = async () => {
-        let response = await fetchAllHouses(currentPage, currentLimit);
+        let response = await fetchAllHouses(currentPage, currentLimit, selectedLandlord);
         if (response && response.EC === 0) {
             setTotalPages(response.DT.totalPages);
             setListHouses(response.DT.houses);
         }
-    }
+    };
 
     const handlePageClick = async (event) => {
         setCurrentPage(+event.selected + 1);
@@ -92,7 +106,24 @@ const Houses = (props) => {
                                     setIsShowModalHouse(true);
                                     setActionModalHouse("CREATE");
                                 }}
-                            ><i className="fa fa-plus-circle"></i>Thêm nhà trọ</button>
+                            ><i className="fa fa-plus-circle"></i>Thêm nhà trọ
+                            </button>
+                            <div className="filter-row my-3">
+                                <div className="row">
+                                    <div className="col-md-3">
+                                        <select
+                                            className="form-select"
+                                            value={selectedLandlord}
+                                            onChange={(e) => setSelectedLandlord(e.target.value)}
+                                        >
+                                            <option value="ALL">Tất cả chủ trọ</option>
+                                            {listLandlords.map((landlord) => (
+                                                <option key={landlord.id} value={landlord.id}>{landlord.hoTen}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div className='house-body'>

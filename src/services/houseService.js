@@ -1,8 +1,8 @@
 // import axios from "axios";
 import axios from '../setup/axios';
 
-const fetchAllHouses = (page, limit) => {
-    return axios.get(`/api/v1/house/read?page=${page}&limit=${limit}`);
+const fetchAllHouses = (page, limit, chuTroId = 'ALL') => {
+    return axios.get(`/api/v1/house/read?page=${page}&limit=${limit}&chuTroId=${chuTroId}`);
 }
 
 const deleteHouse = (house) => {
