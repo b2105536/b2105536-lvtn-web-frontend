@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import './Nav.scss';
 import { Link, NavLink, useLocation, useHistory } from 'react-router-dom';
 import { UserContext } from "../../context/UserContext";
@@ -9,9 +9,13 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 import logo from '../../logo.png';
 import { logoutUser } from '../../services/userService';
 import { toast } from "react-toastify";
+import ChangePasswordModal from "../ManageUsers/ChangePasswordModal";
 
 const NavHeader = (props) => {
     const { user, logoutContext } = useContext(UserContext);
+
+    const [showChangePassModal, setShowChangePassModal] = useState(false);
+
     const location = useLocation();
     const history = useHistory();
 
@@ -99,7 +103,13 @@ const NavHeader = (props) => {
                                         Xin chào {user.account.hoTen}!
                                     </Nav.Item>
                                     <NavDropdown title="Cài đặt" id="basic-nav-dropdown">
-                                        <NavDropdown.Item>Đổi mật khẩu</NavDropdown.Item>
+                                        <NavDropdown.Item>
+                                            <span onClick={() => setShowChangePassModal(true)}>Đổi mật khẩu</span>
+                                        </NavDropdown.Item>
+                                        <ChangePasswordModal
+                                            show={showChangePassModal}
+                                            handleClose={() => setShowChangePassModal(false)}
+                                        />
                                         <NavDropdown.Divider />
                                         <NavDropdown.Item>
                                             <span onClick={() => handleLogout()}>Đăng xuất</span>

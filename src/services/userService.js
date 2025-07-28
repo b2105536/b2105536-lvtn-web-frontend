@@ -41,6 +41,10 @@ const logoutUser = () => {
     return axios.post('/api/v1/logout');
 }
 
+const changePassword = (data) => {
+    return axios.post('/api/v1/user/change-password', data);
+};
+
 export {
     registerNewUser,
     loginUser,
@@ -50,5 +54,6 @@ export {
     createNewUser,
     updateCurrentUser,
     getUserAccount,
-    logoutUser
+    logoutUser,
+    changePassword
  };
