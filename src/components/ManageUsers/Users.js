@@ -86,7 +86,8 @@ const Users = (props) => {
     }
 
     const handleRefresh = async () => {
-        await fetchUsers();
+        setSelectedGroup('ALL');
+        setCurrentPage(1);
     }
 
     return (

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import './Rooms.scss';
-import { deleteRoom, fetchAllRooms, fetchHouse, fetchRoomStatus, fetchRentRange } from '../../services/roomService';
+import { deleteRoom, fetchAllRooms, fetchHouse, fetchRoomStatus, fetchRentRange, fetchAreaRange, fetchCapacity } from '../../services/roomService';
 import ReactPaginate from 'react-paginate';
 import { toast } from 'react-toastify';
 import ModalDelete from '../ManageUsers/ModalDelete';
@@ -12,7 +12,12 @@ const Rooms = (props) => {
     const [listRoomStatuses, setListRoomStatuses] = useState([]);
     const [selectedRoomStatus, setSelectedRoomStatus] = useState('ALL');
     const [listRentRanges, setListRentRanges] = useState([]);
-    const [selectedRange, setSelectedRange] = useState('');
+    const [selectedRentRange, setSelectedRentRange] = useState('ALL');
+    const [listAreaRanges, setListAreaRanges] = useState([]);
+    const [selectedAreaRange, setSelectedAreaRange] = useState('ALL');
+    const [listCapacities, setListCapacities] = useState([]);
+    const [selectedCapacity, setSelectedCapacity] = useState('ALL');
+    const [hasMezzanine, setHasMezzanine] = useState('ALL');
 
     const [listRooms, setListRooms] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
@@ -27,8 +32,18 @@ const Rooms = (props) => {
     const [dataModalRoom, setDataModalRoom] = useState({});
 
     useEffect(() => {
-        fetchHouses();
+        fetchInitialFilters();
     }, []);
+
+    const fetchInitialFilters = async () => {
+        await Promise.all([
+            fetchHouses(),
+            fetchRoomStatuses(),
+            fetchRentRanges(),
+            fetchAreaRanges(),
+            fetchCapacities()
+        ]);
+    };
 
     const fetchHouses = async () => {
         let res = await fetchHouse();
@@ -37,20 +52,12 @@ const Rooms = (props) => {
         }
     };
 
-    useEffect(() => {
-        fetchRoomStatuses();
-    }, []);
-
     const fetchRoomStatuses = async () => {
         let res = await fetchRoomStatus();
         if (res && res.EC === 0) {
             setListRoomStatuses(res.DT);
         }
     };
-
-    useEffect(() => {
-        fetchRentRanges();
-    }, []);
 
     const fetchRentRanges = async () => {
         let res = await fetchRentRange();
@@ -59,17 +66,30 @@ const Rooms = (props) => {
         }
     };
 
+    const fetchAreaRanges = async () => {
+        let res = await fetchAreaRange();
+        if (res && res.EC === 0) {
+            setListAreaRanges(res.DT);
+        }
+    };
+
+    const fetchCapacities = async () => {
+        let res = await fetchCapacity();
+        if (res && res.EC === 0) {
+            setListCapacities(res.DT);
+        }
+    };
+
     useEffect (() => {
         fetchRooms();
-    }, [currentPage, selectedHouse, selectedRoomStatus, selectedRange]);
+    }, [currentPage, selectedHouse, selectedRoomStatus, selectedRentRange, selectedAreaRange, selectedCapacity, hasMezzanine]);
 
     const fetchRooms = async () => {
-        let giaThueTu = '';
-        let giaThueDen = '';
+        let giaThueTu = '', giaThueDen = '', dienTichTu = '', dienTichDen = '';
 
-        if (selectedRange && selectedRange !== 'ALL') {
+        if (selectedRentRange && selectedRentRange !== 'ALL') {
             try {
-                const parsed = JSON.parse(selectedRange);
+                const parsed = JSON.parse(selectedRentRange);
                 giaThueTu = parsed.giaThueTu;
                 giaThueDen = parsed.giaThueDen;
             } catch (error) {
@@ -77,8 +97,25 @@ const Rooms = (props) => {
             }
         }
 
+        if (selectedAreaRange && selectedAreaRange !== 'ALL') {
+            try {
+                const parsed = JSON.parse(selectedAreaRange);
+                dienTichTu = parsed.dienTichTu;
+                dienTichDen = parsed.dienTichDen;
+            } catch (error) {
+                console.error("Lỗi parse khoảng diện tích:", error);
+            }
+        }
+
         let response = await fetchAllRooms(
-            currentPage, currentLimit, selectedHouse, selectedRoomStatus, giaThueTu, giaThueDen
+            currentPage,
+            currentLimit,
+            selectedHouse,
+            selectedRoomStatus,
+            giaThueTu, giaThueDen,
+            dienTichTu, dienTichDen,
+            selectedCapacity,
+            hasMezzanine
         );
         if (response && response.EC === 0) {
             setTotalPages(response.DT.totalPages);
@@ -127,7 +164,10 @@ const Rooms = (props) => {
     const handleRefresh = () => {
         setSelectedHouse('ALL');
         setSelectedRoomStatus('ALL');
-        setSelectedRange('');
+        setSelectedRentRange('ALL');
+        setSelectedAreaRange('ALL');
+        setSelectedCapacity('ALL');
+        setHasMezzanine('ALL');
         setCurrentPage(1);
     };
 
@@ -158,7 +198,7 @@ const Rooms = (props) => {
                                             value={selectedHouse}
                                             onChange={(e) => setSelectedHouse(e.target.value)}
                                         >
-                                            <option value="ALL">Tất cả nhà</option>
+                                            <option value="ALL">Nhà</option>
                                             {listHouses.map((house) => (
                                                 <option key={house.id} value={house.id}>{house.ten}</option>
                                             ))}
@@ -167,10 +207,10 @@ const Rooms = (props) => {
                                     <div className="col-md-2">
                                         <select
                                             className="form-select"
-                                            value={selectedRange}
-                                            onChange={(e) => setSelectedRange(e.target.value)}
+                                            value={selectedRentRange}
+                                            onChange={(e) => setSelectedRentRange(e.target.value)}
                                         >
-                                            <option value="ALL">Tất cả khoảng giá</option>
+                                            <option value="ALL">Khoảng giá</option>
                                             {listRentRanges.map((range) => (
                                                 <option
                                                     key={range.id}
@@ -182,10 +222,48 @@ const Rooms = (props) => {
                                     <div className="col-md-2">
                                         <select
                                             className="form-select"
+                                            value={selectedAreaRange}
+                                            onChange={(e) => setSelectedAreaRange(e.target.value)}
+                                        >
+                                            <option value="ALL">Khoảng diện tích</option>
+                                            {listAreaRanges.map((range) => (
+                                                <option
+                                                    key={range.id}
+                                                    value={JSON.stringify({ dienTichTu: range.dienTichTu, dienTichDen: range.dienTichDen })}
+                                                >{range.label}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="col-md-2">
+                                        <select
+                                            className="form-select"
+                                            value={selectedCapacity}
+                                            onChange={(e) => setSelectedCapacity(e.target.value)}
+                                        >
+                                            <option value="ALL">Sức chứa</option>
+                                            {listCapacities.map((c, index) => (
+                                                <option key={index} value={c}>{c} người</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="col-md-2">
+                                        <select
+                                            className="form-select"
+                                            value={hasMezzanine}
+                                            onChange={(e) => setHasMezzanine(e.target.value)}
+                                        >
+                                            <option value="ALL">Gác lửng</option>
+                                            <option value="true">Có gác</option>
+                                            <option value="false">Không có gác</option>
+                                        </select>
+                                    </div>
+                                    <div className="col-md-2">
+                                        <select
+                                            className="form-select"
                                             value={selectedRoomStatus}
                                             onChange={(e) => setSelectedRoomStatus(e.target.value)}
                                         >
-                                            <option value="ALL">Tất cả trạng thái</option>
+                                            <option value="ALL">Trạng thái</option>
                                             {listRoomStatuses.map((stat) => (
                                                 <option key={stat.id} value={stat.id}>{stat.giaTri}</option>
                                             ))}

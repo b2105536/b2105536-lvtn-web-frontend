@@ -1,14 +1,16 @@
 import axios from '../setup/axios';
 
-const fetchAllRooms = (page, limit, nhaId = 'ALL', ttPhongId = 'ALL', giaThueTu = '', giaThueDen = '') => {
+const fetchAllRooms = (page, limit, nhaId = 'ALL', ttPhongId = 'ALL', giaThueTu = '', giaThueDen = '', dienTichTu = '', dienTichDen = '', sucChua = 'ALL', coGacXep = 'ALL') => {
     return axios.get(`/api/v1/room/read`, {
         params: {
             page,
             limit,
             nhaId,
             ttPhongId,
-            giaThueTu,
-            giaThueDen
+            giaThueTu, giaThueDen,
+            dienTichTu, dienTichDen,
+            sucChua,
+            coGacXep
         }
     });
 }
@@ -41,6 +43,14 @@ const fetchRentRange = () => {
     return axios.get('/api/v1/room/rent-range');
 }
 
+const fetchAreaRange = () => {
+    return axios.get('/api/v1/room/area-range');
+}
+
+const fetchCapacity = () => {
+    return axios.get('/api/v1/room/get-capacities');
+}
+
 export {
     fetchAllRooms,
     deleteRoom,
@@ -49,5 +59,7 @@ export {
     createNewRoom,
     updateCurrentRoom,
     fetchRoomStatus,
-    fetchRentRange
+    fetchRentRange,
+    fetchAreaRange,
+    fetchCapacity
 };

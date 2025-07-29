@@ -86,7 +86,8 @@ const Houses = (props) => {
     }
 
     const handleRefresh = async () => {
-        await fetchHouses();
+        setSelectedLandlord('ALL');
+        setCurrentPage(1);
     }
 
     return (
