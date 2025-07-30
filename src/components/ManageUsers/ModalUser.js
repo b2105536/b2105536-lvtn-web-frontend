@@ -35,6 +35,7 @@ const ModalUser = (props) => {
     }
 
     const [userData, setUserData] = useState(defaultUserData);
+    const [imageName, setImageName] = useState('');
     const [validInputs, setValidInputs] = useState(validDefaultInputs);
     const [userGroups, setUserGroups] = useState([]);
 
@@ -48,6 +49,8 @@ const ModalUser = (props) => {
                 ...dataModalUser,
                 nhomId: dataModalUser.NhomND ? dataModalUser.NhomND.id : ''
             });
+            
+            setImageName('');
         }
     }, [dataModalUser]);
 
@@ -80,6 +83,7 @@ const ModalUser = (props) => {
             reader.onloadend = () => {
                 _userData[name] = reader.result; // Lưu ảnh dưới dạng base64 URL vào state
                 setUserData(_userData);
+                setImageName(value.name);
             };
             reader.readAsDataURL(value);
         } else {
@@ -255,6 +259,19 @@ const ModalUser = (props) => {
                             <input className='form-control' type='file'
                                 onChange={(event) => handleOnChangeInput(event.target.files[0], "anhDD")}
                             />
+                            {imageName && (
+                                <small className='text-muted d-block'>Đã chọn: {imageName}</small>
+                            )}
+
+                            {userData.anhDD && (
+                                <div className='mt-2'>
+                                    <img
+                                        src={userData.anhDD}
+                                        alt="avatar"
+                                        style={{ width: '100px', height: '100px', objectFit: 'cover', borderRadius: '50%', border: '1px solid #ccc' }}
+                                    />
+                                </div>
+                            )}
                         </div>
                         <div className='col-12 col-sm-6 form-group'>
                             <label>Nhóm người dùng (<span className='red'>*</span>):</label>
