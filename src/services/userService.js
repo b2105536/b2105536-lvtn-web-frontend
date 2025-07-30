@@ -43,7 +43,15 @@ const logoutUser = () => {
 
 const changePassword = (data) => {
     return axios.post('/api/v1/user/change-password', data);
-};
+}
+
+const fetchUserAccountInfo = (email) => {
+    return axios.get(`/api/v1/my-account/info?email=${email}`);
+}
+
+const updateUserAccountInfo = (payload) => {
+    return axios.put('/api/v1/my-account/update', payload);
+}
 
 export {
     registerNewUser,
@@ -55,5 +63,7 @@ export {
     updateCurrentUser,
     getUserAccount,
     logoutUser,
-    changePassword
+    changePassword,
+    fetchUserAccountInfo,
+    updateUserAccountInfo
  };

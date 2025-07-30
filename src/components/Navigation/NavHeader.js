@@ -40,7 +40,7 @@ const NavHeader = (props) => {
                 case 1: // Admin
                     return (
                         <>
-                            <NavLink to="/dashboards" exact className="nav-link">TỔNG QUAN</NavLink>
+                            <NavLink to="/dashboards" className="nav-link">TỔNG QUAN</NavLink>
                             <NavLink to="/users" className="nav-link">NGƯỜI DÙNG</NavLink>
                             <NavLink to="/houses" className="nav-link">NHÀ</NavLink>
                             <NavLink to="/rooms" className="nav-link">PHÒNG</NavLink>
@@ -52,24 +52,34 @@ const NavHeader = (props) => {
                 case 2: // Chủ trọ
                     return (
                         <>
-                            <NavLink to="/" className="nav-link">TRANG CHỦ</NavLink>
+                            <NavLink to="/" exact className="nav-link">TRANG CHỦ</NavLink>
                             <NavLink to="/manage/student" className="nav-link">QUẢN LÝ CHUNG</NavLink>
+                            <NavLink to="/my-account" className="nav-link">TÀI KHOẢN</NavLink>
                             <NavLink to="/about" className="nav-link">GIỚI THIỆU</NavLink>
                         </>
                     );
                 case 3: // Sinh viên
                     return (
                         <>
-                            <NavLink to="/" className="nav-link">TRANG CHỦ</NavLink>
+                            <NavLink to="/" exact className="nav-link">TRANG CHỦ</NavLink>
                             <NavLink to="/invoices" className="nav-link">HÓA ĐƠN</NavLink>
                             <NavLink to="/payment" className="nav-link">THANH TOÁN</NavLink>
+                            <NavLink to="/my-account" className="nav-link">TÀI KHOẢN</NavLink>
                             <NavLink to="/about" className="nav-link">GIỚI THIỆU</NavLink>
                         </>
                     );
-                default: // Khách hàng
+                case 4: // Khách hàng có tài khoản
                     return (
                         <>
-                            <NavLink to="/" className="nav-link">TRANG CHỦ</NavLink>
+                            <NavLink to="/" exact className="nav-link">TRANG CHỦ</NavLink>
+                            <NavLink to="/my-account" className="nav-link">TÀI KHOẢN</NavLink>
+                            <NavLink to="/about" className="nav-link">GIỚI THIỆU</NavLink>
+                        </>
+                    );
+                default: // Khách hàng chưa có tài khoản
+                    return (
+                        <>
+                            <NavLink to="/" exact className="nav-link">TRANG CHỦ</NavLink>
                             <NavLink to="/about" className="nav-link">GIỚI THIỆU</NavLink>
                         </>
                     );
@@ -110,6 +120,11 @@ const NavHeader = (props) => {
                                             show={showChangePassModal}
                                             handleClose={() => setShowChangePassModal(false)}
                                         />
+                                        {user?.account?.quyenCuaNhom?.id === 1 && (
+                                            <NavDropdown.Item as={Link} to="/my-account">
+                                                Hồ sơ người dùng
+                                            </NavDropdown.Item>
+                                        )}
                                         <NavDropdown.Divider />
                                         <NavDropdown.Item>
                                             <span onClick={() => handleLogout()}>Đăng xuất</span>
