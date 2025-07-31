@@ -54,6 +54,7 @@ const NavHeader = (props) => {
                         <>
                             <NavLink to="/" exact className="nav-link">TRANG CHỦ</NavLink>
                             <NavLink to="/manage/student" className="nav-link">QUẢN LÝ CHUNG</NavLink>
+                            <NavLink to="/manage/revenue" className="nav-link">DOANH THU</NavLink>
                             <NavLink to="/my-account" className="nav-link">TÀI KHOẢN</NavLink>
                             <NavLink to="/about" className="nav-link">GIỚI THIỆU</NavLink>
                         </>

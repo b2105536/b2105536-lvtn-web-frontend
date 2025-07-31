@@ -236,7 +236,7 @@ const UserAccount = (props) => {
                                 onChange={(e) => handleOnChange(e)}
                             />
                         </Form.Group>
-                        <Button variant="warning" onClick={() => handleUpdate()}>
+                        <Button variant="warning mb-4" onClick={() => handleUpdate()}>
                             Cập nhật
                         </Button>
                     </Form>

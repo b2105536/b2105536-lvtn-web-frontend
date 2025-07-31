@@ -15,6 +15,7 @@ import ManageServices from "../components/Management/ManageServices";
 import Payment from "../components/Payment/Payment";
 import Invoices from "../components/Invoice/Invoices";
 import UserAccount from "../components/UserAccount/UserAccount";
+import ManageRevenue from "../components/Management/ManageRevenue";
 
 const AppRoutes = (props) => {
     return (
@@ -31,6 +32,7 @@ const AppRoutes = (props) => {
             <PrivateRoutes path="/payment" component={Payment} />
             <PrivateRoutes path="/invoices" component={Invoices} />
             <PrivateRoutes path="/my-account" component={UserAccount} />
+            <PrivateRoutes path="/manage/revenue" component={ManageRevenue} />
             
             <Route path="/login">
               <Login />

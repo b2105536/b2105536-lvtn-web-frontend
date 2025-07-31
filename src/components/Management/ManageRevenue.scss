@@ -1,0 +1,16 @@
+.manage-revenue-container {
+    .revenue-header {
+        .actions {
+            .red {
+                color: red;
+            }
+        }
+    }
+    
+    .revenue-body {
+        .list-invoices-footer {
+            display: flex;
+            justify-content: center;
+        }
+    }
+}

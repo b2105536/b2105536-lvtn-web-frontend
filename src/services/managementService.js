@@ -77,6 +77,11 @@ const saveInvoicePayment = (data) => {
     return axios.post('/api/v1/manage/invoice/update', { data });
 };
 
+// Revenue:
+const fetchListInvoices = (houseId, page, limit) => {
+    return axios.get(`/api/v1/manage/revenue/list-invoices?houseId=${houseId}&page=${page}&limit=${limit}`);
+};
+
 export {
     fetchHousesByOwner,
     fetchRoom,
@@ -94,5 +99,6 @@ export {
     saveInvoice,
     fetchShowInvoiceData,
     getInvoiceDataByContract,
-    saveInvoicePayment
+    saveInvoicePayment,
+    fetchListInvoices
 }
