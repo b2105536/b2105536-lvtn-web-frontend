@@ -1,12 +1,16 @@
 import { useContext, useState, useEffect } from "react";
 import './ManageRevenue.scss';
 import { UserContext } from "../../context/UserContext";
-import { fetchHousesByOwner, fetchListInvoices } from "../../services/managementService";
+import { fetchHousesByOwner, fetchListInvoices, fetchRevenueByTime } from "../../services/managementService";
 import { Card, Button, Row, Col } from 'react-bootstrap';
 import { toast } from "react-toastify";
 import { formatDateVN, removeVietnameseTones } from "../../utils/invoiceHelper";
 import ModalDetailInvoice from "../Invoice/ModalDetailInvoice";
 import ReactPaginate from 'react-paginate';
+import { Line } from 'react-chartjs-2';
+import { Chart as ChartJS, LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend } from 'chart.js';
+
+ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend);
 
 const ManageRevenue = (props) => {
     const { user } = useContext(UserContext);
@@ -20,6 +24,10 @@ const ManageRevenue = (props) => {
     const [totalPages, setTotalPages] = useState(0);
     const [invoiceId, setInvoiceId] = useState(null);
     const [showModalDetailInvoice, setShowModalDetailInvoice] = useState(false);
+
+    const [chartLabels, setChartLabels] = useState([]);
+    const [chartData, setChartData] = useState([]);
+    const [chartType, setChartType] = useState('month');
 
     useEffect (() => {
         getHouses();
@@ -66,6 +74,36 @@ const ManageRevenue = (props) => {
         setShowModalDetailInvoice(true);
     }
 
+    useEffect(() => {
+        if (selectedHouseId) {
+            getRevenueChart(selectedHouseId, chartType);
+        } else {
+            setChartLabels([]);
+            setChartData([]);
+            setChartType('month');
+        }
+    }, [selectedHouseId, chartType]);
+
+    const getRevenueChart = async (houseId, type) => {
+        let res = await fetchRevenueByTime(houseId, type);
+        if (res && res.EC === 0) {
+            setChartLabels(res.DT.labels);
+            setChartData(res.DT.data);
+        } else {
+            toast.error(res.EM || "Không thể lấy dữ liệu biểu đồ");
+        }
+    }
+
+    const chartTypeLabel = (type) => {
+        switch (type) {
+            case 'day': return 'ngày';
+            case 'week': return 'tuần';
+            case 'month': return 'tháng';
+            case 'year': return 'năm';
+            default: return '';
+        }
+    }
+
     return (
         <>
             <div className="container">
@@ -100,7 +138,7 @@ const ManageRevenue = (props) => {
                         </div>
                         <div className="list-invoices">
                             {listInvoices.length === 0 ? (
-                                <p>Không có hóa đơn nào.</p>
+                                <p className="text-muted">Không có hóa đơn nào.</p>
                             ) : (
                                 <>
                                     <Row>
@@ -160,9 +198,61 @@ const ManageRevenue = (props) => {
                     <div className="revenue-footer">
                         <div className="sub-title">
                             <h5>Phân tích doanh thu</h5>
+                            <select
+                                className="form-select w-auto"
+                                value={chartType}
+                                onChange={(e) => setChartType(e.target.value)}
+                            >
+                                <option value="day">Theo ngày</option>
+                                <option value="week">Theo tuần</option>
+                                <option value="month">Theo tháng</option>
+                                <option value="year">Theo năm</option>
+                            </select>
                         </div>
-                        <div className="revenue-chart">
-
+                        <div className="revenue-chart mt-3">
+                            {chartLabels.length > 0 ? (
+                                <>
+                                    <Line
+                                        data={{
+                                            labels: chartLabels,
+                                            datasets: [
+                                                {
+                                                    label: 'Doanh thu (VNĐ)',
+                                                    data: chartData,
+                                                    borderColor: 'rgba(75, 192, 192, 1)',
+                                                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                                    tension: 0.4,
+                                                    fill: true,
+                                                },
+                                            ],
+                                        }}
+                                        options={{
+                                            responsive: true,
+                                            plugins: {
+                                                legend: { position: 'top' },
+                                                tooltip: {
+                                                    callbacks: {
+                                                        label: (ctx) => `${ctx.dataset.label}: ${ctx.raw.toLocaleString('vi-VN')} VNĐ`
+                                                    }
+                                                }
+                                            },
+                                            scales: {
+                                                y: {
+                                                    beginAtZero: true,
+                                                    ticks: {
+                                                        callback: (value) => `${value.toLocaleString('vi-VN')} VNĐ`
+                                                    }
+                                                }
+                                            }
+                                        }}
+                                    />
+                                    <div className="chart-subtitle text-center mt-2 mb-4 fw-bold">
+                                        {`Biểu đồ 1. Biểu đồ theo dõi doanh thu theo ${chartTypeLabel(chartType)}`}
+                                    </div>
+                                </>
+                            ) : (
+                                <p className="text-muted">Không có dữ liệu doanh thu.</p>
+                            )}
                         </div>
                     </div>
                 </div>
