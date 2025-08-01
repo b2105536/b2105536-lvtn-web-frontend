@@ -104,6 +104,16 @@ const ManageRevenue = (props) => {
         }
     }
 
+    const getTimeLabel = (type) => {
+        switch (type) {
+            case 'day': return 'Thời gian (ngày)';
+            case 'week': return 'Thời gian (tuần)';
+            case 'month': return 'Thời gian (tháng)';
+            case 'year': return 'Thời gian (năm)';
+            default: return 'Thời gian';
+        }
+    }    
+
     return (
         <>
             <div className="container">
@@ -237,10 +247,20 @@ const ManageRevenue = (props) => {
                                                 }
                                             },
                                             scales: {
+                                                x: {
+                                                    title: {
+                                                        display: true,
+                                                        text: getTimeLabel(chartType)
+                                                    }
+                                                },
                                                 y: {
                                                     beginAtZero: true,
                                                     ticks: {
                                                         callback: (value) => `${value.toLocaleString('vi-VN')} VNĐ`
+                                                    },
+                                                    title: {
+                                                        display: true,
+                                                        text: 'Doanh thu (VNĐ)'
                                                     }
                                                 }
                                             }

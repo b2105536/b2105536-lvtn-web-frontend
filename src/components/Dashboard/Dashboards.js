@@ -3,8 +3,10 @@ import './Dashboards.scss';
 import { fetchTotalUsersByGroup,
         fetchTotalStudentsByGender,
         fetchHousesByDistrict,
-        fetchHousesByOwner } from '../../services/dashboardService';
-import { Pie, Bar } from 'react-chartjs-2';
+        fetchHousesByOwner,
+        fetchRevenueStats } from '../../services/dashboardService';
+import { fetchHouse } from '../../services/roomService';
+import { Line, Pie, Bar } from 'react-chartjs-2';
 import {
     Chart as ChartJS,
     ArcElement,
@@ -22,6 +24,18 @@ const Dashboards = (props) => {
     const [genderChart, setGenderChart] = useState(null);
     const [houseByDistrictChart, setHouseByDistrictChart] = useState(null);
     const [houseByOwnerChart, setHouseByOwnerChart] = useState(null);
+
+    const [chartType, setChartType] = useState('line');
+    const [listHouses, setListHouses] = useState([]);
+    const [houseId, setHouseId] = useState('all');
+    const [timeType, setTimeType] = useState('month');
+    const [fromDate, setFromDate] = useState(new Date());
+    const [toDate, setToDate] = useState(() => {
+        const date = new Date();
+        date.setMonth(date.getMonth() + 1);
+        return date;
+    });
+    const [chartData, setChartData] = useState(null);
 
     useEffect (() => {
         fetchTotalUsersByGroup().then((res) => {
@@ -97,7 +111,64 @@ const Dashboards = (props) => {
                 });
             }
         }).catch(err => console.error(err));
+
+        fetchHouse().then((res) => {
+            if (res && res.EC === 0) {
+                setListHouses(res.DT);
+            }
+        }).catch(err => console.error(err));
     }, []);
+
+    useEffect (() => {
+        let payload = {
+            type: timeType,
+            fromDate: fromDate.toISOString().slice(0, 10),
+            toDate: toDate.toISOString().slice(0, 10),
+        };
+
+        if (houseId !== 'all') {
+            payload.nhaId = houseId;
+        }
+
+        fetchRevenueStats(payload).then((res) => {
+            if (res && res.EC === 0) {
+                setChartData({
+                    labels: res.DT.labels,
+                    datasets: [{
+                        label: 'Doanh thu (VNĐ)',
+                        data: res.DT.data,
+                        backgroundColor: 'rgba(75,192,192,0.2)',
+                        borderColor: 'rgba(75,192,192,1)',
+                        borderWidth: 2,
+                        fill: true
+                    }]
+                });
+            }
+        }).catch(err => console.error(err));
+    }, [houseId, timeType, fromDate, toDate]);
+
+    const getTimeLabel = () => {
+        switch (timeType) {
+            case 'day': return 'Thời gian (ngày)';
+            case 'week': return 'Thời gian (tuần)';
+            case 'month': return 'Thời gian (tháng)';
+            case 'year': return 'Thời gian (năm)';
+            default: return 'Thời gian';
+        }
+    }
+
+    const handleReset = () => {
+        setChartType('line');
+        setHouseId('all');
+        setTimeType('month');
+
+        let now = new Date();
+        let nextMonth = new Date(now);
+        nextMonth.setMonth(nextMonth.getMonth() + 1);
+
+        setFromDate(now);
+        setToDate(nextMonth);
+    }
 
     return (
         <div className="dashboards-container container">
@@ -138,7 +209,7 @@ const Dashboards = (props) => {
                         <div>Đang tải dữ liệu...</div>
                     )}
                 </div>
-                <div className='mt-3'></div>
+                <div className="mt-3"></div>
                 <div className="col-md-6">
                     <h5>Thống kê nhà trọ theo quận/huyện (Thành phố Cần Thơ)</h5>
                     {houseByDistrictChart ? (
@@ -173,6 +244,124 @@ const Dashboards = (props) => {
                         <div>Đang tải dữ liệu...</div>
                     )}
                 </div>
+                <div className="mt-3"></div>
+                <div className="revenue-tracking">
+                    <h5>Theo dõi tăng trưởng doanh thu của các nhà trọ theo mốc thời gian</h5>
+                    <div className="filters row mb-3">
+                        <div className="col-md-2">
+                            <label><span className="red">*</span> Loại biểu đồ</label>
+                            <select className="form-select" value={chartType} onChange={(e) => setChartType(e.target.value)}>
+                                <option value="line">Đường</option>
+                                <option value="bar">Cột</option>
+                                <option value="horizontalBar">Thanh ngang</option>
+                            </select>
+                        </div>
+                        <div className="col-md-3">
+                            <label><span className="red">*</span> Nhà trọ</label>
+                            <select className="form-select" value={houseId} onChange={(e) => setHouseId(e.target.value)}>
+                                <option value="all">Tất cả</option>
+                                {listHouses.length > 0 &&
+                                    listHouses.map((item, index) => {
+                                        return (
+                                            <option key={`house-${index}`} value={item.id}>{item.ten}</option>
+                                        );
+                                    })
+                                }
+                            </select>
+                        </div>
+                        <div className="col-md-2">
+                            <label><span className="red">*</span> Thời gian</label>
+                            <select className="form-select" value={timeType} onChange={(e) => setTimeType(e.target.value)}>
+                                <option value="day">Ngày</option>
+                                <option value="week">Tuần</option>
+                                <option value="month">Tháng</option>
+                                <option value="year">Năm</option>
+                            </select>
+                        </div>
+                        <div className="col-md-2">
+                            <label><span className="red">*</span> Từ ngày</label>
+                            <input
+                                type="date"
+                                className="form-control"
+                                value={fromDate.toISOString().slice(0, 10)}
+                                onChange={(e) => setFromDate(new Date(e.target.value))}
+                            />
+                        </div>
+                        <div className="col-md-2">
+                            <label><span className="red">*</span> Đến ngày</label>
+                            <input
+                                type="date"
+                                className="form-control"
+                                value={toDate.toISOString().slice(0, 10)}
+                                onChange={(e) => setToDate(new Date(e.target.value))}
+                            />
+                        </div>
+                        <div className="col-md-1 d-flex align-items-end">
+                            <button
+                                className="btn btn-secondary"
+                                onClick={() => handleReset()}
+                                title="Đặt lại bộ lọc"
+                            >
+                                <i className="fa fa-refresh"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="chart-container">
+                        {chartData && chartData.labels.length > 0 ? (
+                            chartType === 'line' ? (
+                                <Line
+                                    data={chartData}
+                                    options={{
+                                        responsive: true,
+                                        scales: {
+                                            x: {
+                                                title: {
+                                                    display: true,
+                                                    text: getTimeLabel()
+                                                }
+                                            },
+                                            y: {
+                                                beginAtZero: true,
+                                                title: {
+                                                    display: true,
+                                                    text: 'Doanh thu (VNĐ)'
+                                                }
+                                            }
+                                        }
+                                    }}
+                                />
+                            ) : (
+                                <Bar
+                                    key={chartType}
+                                    data={chartData}
+                                    options={{
+                                        responsive: true,
+                                        indexAxis: chartType === 'horizontalBar' ? 'y' : 'x',
+                                        scales: {
+                                            x: {
+                                                title: {
+                                                    display: true,
+                                                    text: chartType === 'horizontalBar' ? 'Doanh thu (VNĐ)' : getTimeLabel()
+                                                }
+                                            },
+                                            y: {
+                                                title: {
+                                                    display: true,
+                                                    text: chartType === 'horizontalBar' ? getTimeLabel() : 'Doanh thu (VNĐ)'
+                                                },
+                                                beginAtZero: true
+                                            }
+                                        }
+                                    }}
+                                />
+                            )
+                        ) : (
+                            <p>Không có dữ liệu doanh thu trong thời gian đã chọn.</p>
+                        )}
+                    </div>
+                </div>
+                <div className="mt-3"></div>
             </div>
         </div>
     );

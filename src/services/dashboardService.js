@@ -17,9 +17,14 @@ const fetchHousesByOwner = () => {
     return axios.get('/api/v1/dashboard/house-stats-by-owner');
 }
 
+const fetchRevenueStats = (payload) => {
+    return axios.get('/api/v1/dashboard/revenue-statistics', { params: payload });
+}
+
 export {
     fetchTotalUsersByGroup,
     fetchTotalStudentsByGender,
     fetchHousesByDistrict,
-    fetchHousesByOwner
+    fetchHousesByOwner,
+    fetchRevenueStats
  };
