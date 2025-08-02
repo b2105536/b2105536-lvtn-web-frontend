@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 import './ManageStudents.scss';
 import { toast } from 'react-toastify';
-import { fetchHousesByOwner, fetchRoom, deleteContract, fetchStudentInfo } from '../../services/managementService';
+import { fetchHousesByOwner, fetchRoom, terminateContract, fetchStudentInfo } from '../../services/managementService';
 import { UserContext } from "../../context/UserContext";
 import ModalStudent from './ModalStudent';
 import ModalDelete from '../ManageUsers/ModalDelete';
@@ -89,10 +89,10 @@ const ManageStudents = (props) => {
         setSelectedDeleteRoomId(null);
     }
 
-    const handleDeleteContract = async () => {
+    const handleTerminateContract = async () => {
         try {
             setIsDeleting(true);
-            let res = await deleteContract(selectedContractId, selectedDeleteRoomId);
+            let res = await terminateContract(selectedContractId, selectedDeleteRoomId);
             if (res && res.EC === 0) {
                 toast.success(res.EM);
                 await getAllRooms(selectedHouseId);
@@ -100,7 +100,7 @@ const ManageStudents = (props) => {
                 toast.error(res.EM);
             }
         } catch (e) {
-            toast.error("Có lỗi xảy ra khi xóa hợp đồng!");
+            toast.error("Có lỗi xảy ra khi kết thúc hợp đồng!");
             console.log(e);
         } finally {
             setIsDeleting(false);
@@ -156,6 +156,7 @@ const ManageStudents = (props) => {
                                     }
                                 </select>
                             </div>
+                            {/* <i class="fa fa-wrench"></i> */}
                             <hr />
                         </div>
                     </div>
@@ -373,9 +374,9 @@ const ManageStudents = (props) => {
                 show={showModalDelete}
                 disabled={isDeleting}
                 handleClose={() => setShowModalDelete(false)}
-                confirmDelete={handleDeleteContract}
-                title="Xóa hợp đồng"
-                content={`Bạn có chắc chắn muốn xóa hợp đồng thuê của sinh viên "${
+                confirmDelete={handleTerminateContract}
+                title="Kết thúc hợp đồng"
+                content={`Bạn có chắc chắn muốn kết thúc hợp đồng thuê của sinh viên "${
                     listRooms.find(r => r.id === selectedDeleteRoomId)?.sinhVienThue?.hoTen || '(không rõ tên)'}" hay không?`}
             />
 

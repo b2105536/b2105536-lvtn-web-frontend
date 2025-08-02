@@ -12,7 +12,7 @@ const createOrLinkTenant = (data) => {
     return axios.post('/api/v1/manage/student/create', data);
 };
 
-const deleteContract = (hopDongId, phongId) => {
+const terminateContract = (hopDongId, phongId) => {
     return axios.delete('/api/v1/manage/student/delete', {
         data: {
             hopDongId,
@@ -99,7 +99,7 @@ export {
     fetchHousesByOwner,
     fetchRoom,
     createOrLinkTenant,
-    deleteContract,
+    terminateContract,
     createServices,
     fetchAllServices,
     deleteService,

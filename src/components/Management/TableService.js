@@ -43,6 +43,8 @@ const TableService = forwardRef ((props, ref) => {
         if (data && +data.EC === 0) {
             toast.success(data.EM);
             await getAllServices();
+        } else {
+            toast.error(data.EM);
         }
     }
 
