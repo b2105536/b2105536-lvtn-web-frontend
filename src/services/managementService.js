@@ -95,6 +95,11 @@ const fetchStudentInfo = (roomId) => {
     return axios.get(`/api/v1/manage/room/student-info?phongId=${roomId}`);
 };
 
+// Modal Edit House
+const updateHouseInfo = (data) => {
+    return axios.put('/api/v1/manage/house/update', data);
+};
+
 export {
     fetchHousesByOwner,
     fetchRoom,
@@ -116,5 +121,6 @@ export {
     fetchListInvoices,
     fetchRevenueByTime,
     updateRoomInfo,
-    fetchStudentInfo
+    fetchStudentInfo,
+    updateHouseInfo
 }

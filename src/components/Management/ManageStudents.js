@@ -11,6 +11,7 @@ import ModalShowInvoice from './ModalShowInvoice';
 import ModalConfirmInvoice from './ModalConfirmInvoice';
 import ModalEditRoom from './ModalEditRoom';
 import ModalStudentInfo from './ModalStudentInfo';
+import ModalEditHouse from './ModalEditHouse';
 
 const ManageStudents = (props) => {
     const { user } = useContext(UserContext);
@@ -52,6 +53,9 @@ const ManageStudents = (props) => {
     // Modal Student Info
     const [showStudentModal, setShowStudentModal] = useState(false);
     const [studentInfo, setStudentInfo] = useState([]);
+
+    // Modal Edit House
+    const [showUpdateHouseModal, setShowUpdateHouseModal] = useState(false);
 
     useEffect (() => {
         getHouses();
@@ -140,23 +144,35 @@ const ManageStudents = (props) => {
                             <h3>Quản lý chung</h3>
                         </div>
                         <div className="actions">
-                            <div className='col-12 col-sm-6 form-group'>
-                                <label>Nhà trọ sở hữu (<span className='red'>*</span>):</label>
-                                <select className='form-select'
-                                    value={selectedHouseId}
-                                    onChange={(event) => handleOnChangeHouse(event.target.value)}
-                                >
-                                    <option value="">-- Chọn nhà trọ --</option>
-                                    {houses.length > 0 &&
-                                        houses.map((item, index) => {
-                                            return (
-                                                <option key={`house-${index}`} value={item.id}>{item.ten}</option>
-                                            );
-                                        })
-                                    }
-                                </select>
+                            <div className="form-group">
+                                <label>Nhà trọ sở hữu (<span className="red">*</span>):</label>
+                                <div className="row align-items-center">
+                                    <div className="col-sm-6">
+                                        <select className='form-select'
+                                            value={selectedHouseId}
+                                            onChange={(event) => handleOnChangeHouse(event.target.value)}
+                                        >
+                                            <option value="">-- Chọn nhà trọ --</option>
+                                            {houses.length > 0 &&
+                                                houses.map((item, index) => {
+                                                    return (
+                                                        <option key={`house-${index}`} value={item.id}>{item.ten}</option>
+                                                    );
+                                                })
+                                            }
+                                        </select>
+                                    </div>
+                                    <div className="col-sm-6">
+                                        {selectedHouseId &&
+                                            <i className="fa fa-wrench text-primary"
+                                                title="Chỉnh sửa nhà trọ"
+                                                style={{ cursor: 'pointer', fontSize: '1.5rem' }}
+                                                onClick={() => setShowUpdateHouseModal(true)}
+                                            ></i>
+                                        }
+                                    </div>
+                                </div>
                             </div>
-                            {/* <i class="fa fa-wrench"></i> */}
                             <hr />
                         </div>
                     </div>
@@ -394,6 +410,17 @@ const ManageStudents = (props) => {
                 handleClose={() => setShowStudentModal(false)}
                 sinhVien={studentInfo}
             />
+
+            {showUpdateHouseModal &&
+                <ModalEditHouse
+                    show={showUpdateHouseModal}
+                    handleClose={(needRefresh) => {
+                        setShowUpdateHouseModal(false);
+                        if (needRefresh) getHouses();
+                    }}
+                    house={houses.find(h => h.id === Number(selectedHouseId))}
+                />
+            }
         </>
     );
 }
