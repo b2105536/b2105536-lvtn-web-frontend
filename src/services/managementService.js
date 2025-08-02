@@ -86,6 +86,15 @@ const fetchRevenueByTime = (houseId, type) => {
     return axios.get(`/api/v1/manage/revenue/chart?houseId=${houseId}&type=${type}`);
 };
 
+// Modal Edit Room
+const updateRoomInfo = (data) => {
+    return axios.put('/api/v1/manage/room/update', data);
+};
+
+const fetchStudentInfo = (roomId) => {
+    return axios.get(`/api/v1/manage/room/student-info?phongId=${roomId}`);
+};
+
 export {
     fetchHousesByOwner,
     fetchRoom,
@@ -105,5 +114,7 @@ export {
     getInvoiceDataByContract,
     saveInvoicePayment,
     fetchListInvoices,
-    fetchRevenueByTime
+    fetchRevenueByTime,
+    updateRoomInfo,
+    fetchStudentInfo
 }

@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 import './ManageStudents.scss';
 import { toast } from 'react-toastify';
-import { fetchHousesByOwner, fetchRoom, deleteContract } from '../../services/managementService';
+import { fetchHousesByOwner, fetchRoom, deleteContract, fetchStudentInfo } from '../../services/managementService';
 import { UserContext } from "../../context/UserContext";
 import ModalStudent from './ModalStudent';
 import ModalDelete from '../ManageUsers/ModalDelete';
@@ -9,9 +9,11 @@ import ModalService from './ModalService';
 import ModalInvoice from './ModalInvoice';
 import ModalShowInvoice from './ModalShowInvoice';
 import ModalConfirmInvoice from './ModalConfirmInvoice';
+import ModalEditRoom from './ModalEditRoom';
+import ModalStudentInfo from './ModalStudentInfo';
 
 const ManageStudents = (props) => {
-    const { user, loginContext } = useContext(UserContext);
+    const { user } = useContext(UserContext);
 
     const [activeTab, setActiveTab] = useState('rooms');
 
@@ -41,6 +43,15 @@ const ManageStudents = (props) => {
     const [showModalDelete, setShowModalDelete] = useState(false);
     const [selectedContractId, setSelectedContractId] = useState(null);
     const [selectedDeleteRoomId, setSelectedDeleteRoomId] = useState(null);
+
+    // Modal Edit Room
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [editRoomName, setEditRoomName] = useState('');
+    const [editRoomRent, setEditRoomRent] = useState('');
+
+    // Modal Student Info
+    const [showStudentModal, setShowStudentModal] = useState(false);
+    const [studentInfo, setStudentInfo] = useState([]);
 
     useEffect (() => {
         getHouses();
@@ -97,17 +108,28 @@ const ManageStudents = (props) => {
             setSelectedContractId(null);
             setSelectedDeleteRoomId(null);
         }
-    };
+    }
 
     const handleShowInvoice = (hopDongId) => {
         setInvoiceHopDongId(hopDongId);
         setShowInvoiceModal(true);
-    };
+    }
 
     const handleShowInvoiceDetail = (hopDongId) => {
         setInvoiceHopDongId(hopDongId);
         setShowModalShowInvoice(true);
-    };
+    }
+
+    const handleViewStudentInfo = async (roomId) => {
+        const res = await fetchStudentInfo(roomId);
+        
+        if (res && res.EC === 0) {
+            setStudentInfo(res.DT);
+        } else {
+            setStudentInfo([]);
+        }
+        setShowStudentModal(true);
+    }
 
     return (
         <>
@@ -173,6 +195,25 @@ const ManageStudents = (props) => {
                                                 <strong>{room.tenPhong}</strong>
                                             </div>
                                             <div className="card-body d-flex flex-column">
+                                                <div className="d-flex justify-content-end gap-3 mb-2">
+                                                    <i
+                                                        className="fa fa-pencil-square-o text-primary"
+                                                        title="Chỉnh sửa thông tin phòng"
+                                                        style={{ cursor: 'pointer', fontSize: '1.2rem' }}
+                                                        onClick={() => {
+                                                            setSelectedRoomId(room.id);
+                                                            setEditRoomName(room.tenPhong);
+                                                            setEditRoomRent(room.giaThue);
+                                                            setShowEditModal(true);
+                                                        }}
+                                                    ></i>
+                                                    <i
+                                                        className="fa fa-id-card-o text-info"
+                                                        title="Xem thông tin khách thuê"
+                                                        style={{ cursor: 'pointer', fontSize: '1.2rem' }}
+                                                        onClick={() => handleViewStudentInfo(room.id)}
+                                                    ></i>
+                                                </div>
                                                 <button className="btn btn-outline-success mb-2"
                                                     onClick={() => {
                                                         setSelectedRoomId(room.id);
@@ -336,6 +377,21 @@ const ManageStudents = (props) => {
                 title="Xóa hợp đồng"
                 content={`Bạn có chắc chắn muốn xóa hợp đồng thuê của sinh viên "${
                     listRooms.find(r => r.id === selectedDeleteRoomId)?.sinhVienThue?.hoTen || '(không rõ tên)'}" hay không?`}
+            />
+
+            <ModalEditRoom
+                show={showEditModal}
+                onHide={() => setShowEditModal(false)}
+                roomId={selectedRoomId}
+                roomName={editRoomName}
+                roomRent={editRoomRent}
+                refresh={() => getAllRooms(selectedHouseId)}
+            />
+
+            <ModalStudentInfo
+                show={showStudentModal}
+                handleClose={() => setShowStudentModal(false)}
+                sinhVien={studentInfo}
             />
         </>
     );
