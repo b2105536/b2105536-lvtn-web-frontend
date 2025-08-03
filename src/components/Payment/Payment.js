@@ -5,7 +5,7 @@ import { getPaymentInfo, createZaloPayOrder } from '../../services/paymentServic
 import { removeVietnameseTones } from '../../utils/invoiceHelper';
 
 const Payment = (props) => {
-    const { user, loginContext } = useContext(UserContext);
+    const { user } = useContext(UserContext);
 
     const [data, setData] = useState(null);
 

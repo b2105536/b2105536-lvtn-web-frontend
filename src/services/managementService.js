@@ -100,6 +100,10 @@ const updateHouseInfo = (data) => {
     return axios.put('/api/v1/manage/house/update', data);
 };
 
+const fetchHouseImages = (houseId) => {
+    return axios.get(`/api/v1/manage/house/images/${houseId}`);
+};
+
 export {
     fetchHousesByOwner,
     fetchRoom,
@@ -122,5 +126,6 @@ export {
     fetchRevenueByTime,
     updateRoomInfo,
     fetchStudentInfo,
-    updateHouseInfo
+    updateHouseInfo,
+    fetchHouseImages
 }

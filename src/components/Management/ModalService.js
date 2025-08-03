@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { fetchService, fetchContract, fetchServicesByContract, assignServicesToContract } from '../../services/managementService';
-import _ from 'lodash';
+import { fetchService, fetchServicesByContract, assignServicesToContract } from '../../services/managementService';
 import { Modal, Button } from 'react-bootstrap';
 
 const ModalService = (props) => {
