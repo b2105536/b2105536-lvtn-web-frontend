@@ -32,7 +32,7 @@ const NavHeader = (props) => {
         }
     }
 
-    if ((user && user.isAuthenticated === true) || location.pathname === '/' || location.pathname === '/about') {
+    if ((user && user.isAuthenticated === true) || location.pathname === '/' || location.pathname === '/about' || location.pathname.startsWith('/house/house-detail/')) {
         const userRoleId = user?.account?.quyenCuaNhom?.id;
 
         const renderNavLinks = () => {

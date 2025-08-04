@@ -16,6 +16,7 @@ import Payment from "../components/Payment/Payment";
 import Invoices from "../components/Invoice/Invoices";
 import UserAccount from "../components/UserAccount/UserAccount";
 import ManageRevenue from "../components/Management/ManageRevenue";
+import HouseDetail from "../components/Home/HouseDetail";
 
 const AppRoutes = (props) => {
     return (
@@ -42,6 +43,9 @@ const AppRoutes = (props) => {
             </Route>
             <Route path="/about">
               <About />
+            </Route>
+            <Route path="/house/house-detail/:id">
+              <HouseDetail />
             </Route>
             <Route path="/" exact>
               <Home />

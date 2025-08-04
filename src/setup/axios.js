@@ -35,6 +35,7 @@ instance.interceptors.response.use(function (response) {
             if (window.location.pathname !== '/'
                 && window.location.pathname !== '/login'
                 && window.location.pathname !== '/register'
+                && !window.location.pathname.startsWith('/house/house-detail/')
             ) {
                 toast.error("Người dùng không được phép. (Unauthorized user)");
             }

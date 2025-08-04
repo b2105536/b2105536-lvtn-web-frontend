@@ -1,6 +1,7 @@
 import './Home.scss';
 import React, { useEffect, useState } from 'react';
 import { fetchAllHouses } from '../../services/homeService';
+import { Carousel } from 'bootstrap';
 
 const Home = () => {
     const [listHouses, setListHouses] = useState([]);
@@ -15,6 +16,18 @@ const Home = () => {
             setListHouses(res.DT);
         }
     };
+
+    useEffect(() => {
+        if (listHouses.length > 0) {
+            const carousels = document.querySelectorAll('.carousel');
+            carousels.forEach((carousel) => {
+                new Carousel(carousel, {
+                    interval: 3000,
+                    ride: 'carousel'
+                });
+            });
+        }
+    }, [listHouses]);
 
     return (
         <div className="home-container container">
@@ -102,9 +115,19 @@ const Home = () => {
                                             <i className="fa fa-info-circle"></i>
                                             {item.moTa || ''}
                                         </p>
-                                        <p className="card-text">
-                                            <small className={`text-body-secondary ${item.tinhTrang === "Còn phòng" ? 'green' : 'red'}`}>{item.tinhTrang}</small>
-                                        </p>
+                                        <div className="d-flex justify-content-between align-items-center">
+                                            <p className="card-text mb-0">
+                                                <small className={`text-body-secondary ${item.tinhTrang === "Còn phòng" ? 'green' : 'red'}`}>
+                                                    {item.tinhTrang}
+                                                </small>
+                                            </p>
+                                            <button
+                                                className="btn btn-primary btn-sm"
+                                                onClick={() => window.location.href = `/house/house-detail/${item.id}`}
+                                            >
+                                                Ghé thăm
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
