@@ -49,6 +49,8 @@ const ManageStudents = (props) => {
     const [showEditModal, setShowEditModal] = useState(false);
     const [editRoomName, setEditRoomName] = useState('');
     const [editRoomRent, setEditRoomRent] = useState('');
+    const [editRoomStat, setEditRoomStat] = useState('');
+    const [hasContract, setHasContract] = useState(false);
 
     // Modal Student Info
     const [showStudentModal, setShowStudentModal] = useState(false);
@@ -221,6 +223,8 @@ const ManageStudents = (props) => {
                                                             setSelectedRoomId(room.id);
                                                             setEditRoomName(room.tenPhong);
                                                             setEditRoomRent(room.giaThue);
+                                                            setEditRoomStat(room.ttPhongId);
+                                                            setHasContract(Number(room?.HopDongs[0]?.ttHopDongId) === 8 ? true : false);
                                                             setShowEditModal(true);
                                                         }}
                                                     ></i>
@@ -402,6 +406,8 @@ const ManageStudents = (props) => {
                 roomId={selectedRoomId}
                 roomName={editRoomName}
                 roomRent={editRoomRent}
+                roomStat={editRoomStat}
+                hasContract={hasContract}
                 refresh={() => getAllRooms(selectedHouseId)}
             />
 

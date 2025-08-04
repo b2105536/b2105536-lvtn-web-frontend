@@ -29,7 +29,7 @@ const HouseDetail = () => {
     }, [id]);
 
     const handleRoomClick = (room) => {
-        if (room?.BangMa?.giaTri === "Còn trống") {
+        if (room?.BangMa?.giaTri !== "Đã thuê") {
             setSelectedRoom(room);
             setShowModal(true);
         }
@@ -73,14 +73,15 @@ const HouseDetail = () => {
                 <h5 className="mt-4">Danh sách phòng</h5>
                 <div className="d-flex flex-wrap gap-3">
                     {house.Phongs?.length > 0 ? house.Phongs.map(room => {
-                        const isAvailable = room.BangMa?.giaTri === "Còn trống";
+                        const status = room.BangMa?.giaTri;
+                        const isClickable = status !== "Đã thuê";
                         return (
                             <button
                                 key={room.id}
-                                className={`btn ${isAvailable ? 'btn-outline-primary' : 'btn-secondary'}`}
-                                onClick={() => isAvailable && handleRoomClick(room)}
-                                disabled={!isAvailable}
-                                title={isAvailable ? 'Xem chi tiết và đặt phòng' : `Phòng ${room.BangMa?.giaTri.toLowerCase()}`}
+                                className={`btn ${status === "Còn trống" ? 'btn-outline-primary' : 'btn-secondary'}`}
+                                onClick={() => isClickable && handleRoomClick(room)}
+                                disabled={!isClickable}
+                                title={status === "Còn trống" ? 'Xem chi tiết và đặt phòng' : `Phòng ${status.toLowerCase()}`}
                             >
                                 {room.tenPhong}
                             </button>
@@ -138,9 +139,11 @@ const HouseDetail = () => {
                     </Modal.Body>
                     <Modal.Footer>
                         <Button variant="secondary" onClick={() => handleCloseModal()}>Đóng</Button>
-                        <Button variant="success" onClick={() => alert("Chức năng Đặt phòng sẽ triển khai sau.")}>
-                            Đặt phòng
-                        </Button>
+                        {selectedRoom?.BangMa?.giaTri === "Còn trống" && (
+                            <Button variant="success" onClick={() => alert("Chức năng Đặt phòng sẽ triển khai sau.")}>
+                                Đặt phòng
+                            </Button>
+                        )}
                     </Modal.Footer>
                 </Modal>
 
