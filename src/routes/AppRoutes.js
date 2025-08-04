@@ -17,6 +17,7 @@ import Invoices from "../components/Invoice/Invoices";
 import UserAccount from "../components/UserAccount/UserAccount";
 import ManageRevenue from "../components/Management/ManageRevenue";
 import HouseDetail from "../components/Home/HouseDetail";
+import Booking from "../components/Home/Booking";
 
 const AppRoutes = (props) => {
     return (
@@ -34,6 +35,7 @@ const AppRoutes = (props) => {
             <PrivateRoutes path="/invoices" component={Invoices} />
             <PrivateRoutes path="/my-account" component={UserAccount} />
             <PrivateRoutes path="/manage/revenue" component={ManageRevenue} />
+            <PrivateRoutes path="/house/booking/:roomId" component={Booking} />
             
             <Route path="/login">
               <Login />

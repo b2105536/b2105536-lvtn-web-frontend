@@ -1,11 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import './HouseDetail.scss';
 import { useParams, useHistory } from 'react-router-dom';
 import { Modal, Button } from 'react-bootstrap';
 import { fetchHouseDetailById } from '../../services/homeService';
 import { Spinner } from 'react-bootstrap';
+import { UserContext } from "../../context/UserContext";
 
 const HouseDetail = () => {
+    const { user } = useContext(UserContext);
+
     const { id } = useParams();
     const history = useHistory();
 
@@ -15,6 +18,9 @@ const HouseDetail = () => {
     const [selectedRoom, setSelectedRoom] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [previewImage, setPreviewImage] = useState(null);
+
+    const [showLoginModal, setShowLoginModal] = useState(false);
+    const [showRoleWarningModal, setShowRoleWarningModal] = useState(false);
 
     useEffect(() => {
         const getDetail = async () => {
@@ -47,6 +53,20 @@ const HouseDetail = () => {
                 <div className="mt-2">Đang tải dữ liệu...</div>
             </div>
         );
+    }
+
+    const handleBooking = () => {
+        if (user && user.isAuthenticated === true) {
+            if (user.account?.quyenCuaNhom?.id === 3) {
+                history.push(`/house/booking/${selectedRoom.id}`);
+            } else {
+                setShowModal(false);
+                setShowRoleWarningModal(true);
+            }
+        } else {
+            setShowModal(false);
+            setShowLoginModal(true);
+        }
     }
 
     return (
@@ -140,10 +160,44 @@ const HouseDetail = () => {
                     <Modal.Footer>
                         <Button variant="secondary" onClick={() => handleCloseModal()}>Đóng</Button>
                         {selectedRoom?.BangMa?.giaTri === "Còn trống" && (
-                            <Button variant="success" onClick={() => alert("Chức năng Đặt phòng sẽ triển khai sau.")}>
+                            <Button variant="success" onClick={() => handleBooking()}>
                                 Đặt phòng
                             </Button>
                         )}
+                    </Modal.Footer>
+                </Modal>
+
+                <Modal show={showLoginModal} onHide={() => setShowLoginModal(false)} centered>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Yêu cầu đăng nhập</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        Bạn cần đăng nhập để thực hiện chức năng đặt phòng.
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={() => {setShowLoginModal(false); setShowModal(true)}}>
+                            Quay lại
+                        </Button>
+                        <Button variant="primary" onClick={() => {
+                            setShowLoginModal(false);
+                            history.push("/login");
+                        }}>
+                            Tiếp tục
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+
+                <Modal show={showRoleWarningModal} onHide={() => setShowRoleWarningModal(false)} centered>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Không đủ quyền</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        Chức năng đặt phòng chỉ dành cho tài khoản sinh viên.
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="warning" onClick={() => {setShowRoleWarningModal(false); setShowModal(true)}}>
+                            Quay lại
+                        </Button>
                     </Modal.Footer>
                 </Modal>
 
