@@ -1,6 +1,6 @@
 import { useContext, useState, useEffect } from "react";
 import { UserContext } from "../../context/UserContext";
-import { fetchAllInvoices } from "../../services/paymentService";
+import { fetchAllInvoices, fetchAllBookings } from "../../services/paymentService";
 import { Card, Button, Spinner, Row, Col } from 'react-bootstrap';
 import { toast } from "react-toastify";
 import { formatDateVN, removeVietnameseTones } from '../../utils/invoiceHelper';
@@ -12,11 +12,15 @@ const Invoices = (props) => {
     const [invoices, setInvoices] = useState([]);
     const [loading, setLoading] = useState(true);
 
+    const [bookings, setBookings] = useState([]);
+    const [loadingBookings, setLoadingBookings] = useState(true);
+
     const [invoiceId, setInvoiceId] = useState(null);
     const [showModalDetailInvoice, setShowModalDetailInvoice] = useState(false);
 
     useEffect(() => {
         getInvoices();
+        getBookings();
     }, []);
 
     const getInvoices = async () => {
@@ -26,6 +30,16 @@ const Invoices = (props) => {
             setLoading(false);
         } else {
             toast.error(res.EC);
+        }
+    }
+
+    const getBookings = async () => {
+        let res = await fetchAllBookings(user.account.email);
+        if (res && res.EC === 0) {
+            setBookings(res.DT);
+            setLoadingBookings(false);
+        } else {
+            toast.error(res.EM);
         }
     }
 
@@ -70,6 +84,35 @@ const Invoices = (props) => {
                                                 <i className="fa fa-info-circle me-1"></i>Xem chi tiết
                                             </Button>
                                         </div>
+                                    </Card.Body>
+                                </Card>
+                            </Col>
+                        ))}
+                        </Row>
+                    )}
+                </div>
+                <div className='booking-container mt-5'>
+                    <div className='booking-title'>
+                        <h5>Danh sách đặt phòng</h5><hr />
+                    </div>
+
+                    {loadingBookings ? (
+                        <div className='loading-container'>
+                            <Spinner animation="border" className="text-primary" />
+                            <div className="mt-2">Đang tải dữ liệu...</div>
+                        </div>
+                    ) : bookings.length === 0 ? (
+                        <p>Không có đặt phòng nào.</p>
+                    ) : (
+                        <Row>
+                        {bookings.map((booking, idx) => (
+                            <Col key={idx} md={4} className="mb-3">
+                                <Card className="shadow-sm h-100">
+                                    <Card.Body>
+                                        <Card.Title>Phòng: {booking?.tenPhong}</Card.Title>
+                                        <div><strong>Ngày đặt:</strong> {formatDateVN(booking?.createdAt)}</div>
+                                        <div><strong>Nhà trọ:</strong> {booking?.tenNha}</div>
+                                        <div><strong>Trạng thái:</strong> Chờ xử lý</div>
                                     </Card.Body>
                                 </Card>
                             </Col>

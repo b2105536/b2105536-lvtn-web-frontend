@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 import './ManageStudents.scss';
 import { toast } from 'react-toastify';
-import { fetchHousesByOwner, fetchRoom, terminateContract, fetchStudentInfo } from '../../services/managementService';
+import { fetchHousesByOwner, fetchRoom, terminateContract, fetchStudentInfo, fetchBookingCountByRoom } from '../../services/managementService';
 import { UserContext } from "../../context/UserContext";
 import ModalStudent from './ModalStudent';
 import ModalDelete from '../ManageUsers/ModalDelete';
@@ -12,6 +12,7 @@ import ModalConfirmInvoice from './ModalConfirmInvoice';
 import ModalEditRoom from './ModalEditRoom';
 import ModalStudentInfo from './ModalStudentInfo';
 import ModalEditHouse from './ModalEditHouse';
+import ModalBookingList from './ModalBookingList';
 
 const ManageStudents = (props) => {
     const { user } = useContext(UserContext);
@@ -59,6 +60,10 @@ const ManageStudents = (props) => {
     // Modal Edit House
     const [showUpdateHouseModal, setShowUpdateHouseModal] = useState(false);
 
+    // Modal Booking List
+    const [showBookingModal, setShowBookingModal] = useState(false);
+    const [selectedBookingRoomId, setSelectedBookingRoomId] = useState(null); 
+
     useEffect (() => {
         getHouses();
         getAllRooms();
@@ -76,7 +81,16 @@ const ManageStudents = (props) => {
     const getAllRooms = async (nhaId) => {
         let res = await fetchRoom(nhaId);
         if (res && +res.EC === 0) {
-            setListRooms(res.DT);
+            const roomsWithBookingCount = await Promise.all(
+                res.DT.map(async (room) => {
+                    const countRes = await fetchBookingCountByRoom(room.id);
+                    return {
+                        ...room,
+                        bookingCount: countRes?.DT || 0
+                    };
+                })
+            );
+            setListRooms(roomsWithBookingCount);
         } else {
             toast.error(res.EM);
         }
@@ -234,6 +248,26 @@ const ManageStudents = (props) => {
                                                         style={{ cursor: 'pointer', fontSize: '1.2rem' }}
                                                         onClick={() => handleViewStudentInfo(room.id)}
                                                     ></i>
+                                                    <div className="position-relative">
+                                                        <i
+                                                            className="fa fa-address-book-o text-secondary"
+                                                            title="Xem danh sách đặt phòng"
+                                                            style={{ cursor: 'pointer', fontSize: '1.2rem' }}
+                                                            onClick={() => {
+                                                                setSelectedBookingRoomId(room.id);
+                                                                setShowBookingModal(true);
+                                                            }}
+                                                        ></i>
+
+                                                        {room.bookingCount > 0 && (
+                                                            <span
+                                                                className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                                                                style={{ fontSize: '0.6rem' }}
+                                                            >
+                                                                {room.bookingCount}
+                                                            </span>
+                                                        )}
+                                                    </div>
                                                 </div>
                                                 <button className="btn btn-outline-success mb-2"
                                                     onClick={() => {
@@ -427,6 +461,12 @@ const ManageStudents = (props) => {
                     house={houses.find(h => h.id === Number(selectedHouseId))}
                 />
             }
+
+            <ModalBookingList
+                show={showBookingModal}
+                handleClose={() => setShowBookingModal(false)}
+                roomId={selectedBookingRoomId}
+            />
         </>
     );
 }

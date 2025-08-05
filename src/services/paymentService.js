@@ -18,11 +18,16 @@ const fetchAllInvoices = (email) => {
 
 const fetchDetailInvoice = (hoaDonId) => {
     return axios.get(`/api/v1/invoice/${hoaDonId}`);
-}
+};
+
+const fetchAllBookings = (email) => {
+    return axios.get(`/api/v1/bookings?email=${email}`);
+};
 
 export {
     getPaymentInfo,
     createZaloPayOrder,
     fetchAllInvoices,
-    fetchDetailInvoice
+    fetchDetailInvoice,
+    fetchAllBookings
 }

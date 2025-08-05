@@ -104,6 +104,15 @@ const fetchHouseImages = (houseId) => {
     return axios.get(`/api/v1/manage/house/images/${houseId}`);
 };
 
+// Modal Booking List
+const fetchBookingsByRoom = (roomId) => {
+    return axios.get(`/api/v1/manage/bookings/room/${roomId}`);
+};
+
+const fetchBookingCountByRoom = (roomId) => {
+    return axios.get(`/api/v1/manage/bookings/count/${roomId}`);
+};
+
 export {
     fetchHousesByOwner,
     fetchRoom,
@@ -127,5 +136,7 @@ export {
     updateRoomInfo,
     fetchStudentInfo,
     updateHouseInfo,
-    fetchHouseImages
+    fetchHouseImages,
+    fetchBookingsByRoom,
+    fetchBookingCountByRoom
 }
