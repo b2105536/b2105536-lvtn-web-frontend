@@ -208,7 +208,12 @@ const Booking = () => {
                         <Form.Group controlId="agreeCheck" className="mb-3">
                             <Form.Check
                                 type="checkbox"
-                                label="Tôi cam đoan thông tin cá nhân mà tôi dùng để đặt phòng là đúng sự thật."
+                                label={
+                                    <span>
+                                        <span className="red me-1">*</span>
+                                        Tôi cam đoan thông tin cá nhân mà tôi dùng để đặt phòng là đúng sự thật.
+                                    </span>
+                                }
                                 checked={agree}
                                 onChange={(e) => setAgree(e.target.checked)}
                             />

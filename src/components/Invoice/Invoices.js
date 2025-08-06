@@ -1,10 +1,11 @@
 import { useContext, useState, useEffect } from "react";
 import { UserContext } from "../../context/UserContext";
-import { fetchAllInvoices, fetchAllBookings } from "../../services/paymentService";
+import { fetchAllInvoices, fetchAllBookings, deleteBooking } from "../../services/paymentService";
 import { Card, Button, Spinner, Row, Col } from 'react-bootstrap';
 import { toast } from "react-toastify";
 import { formatDateVN, removeVietnameseTones } from '../../utils/invoiceHelper';
 import ModalDetailInvoice from "./ModalDetailInvoice";
+import ModalDelete from "../ManageUsers/ModalDelete";
 
 const Invoices = (props) => {
     const { user } = useContext(UserContext);
@@ -17,6 +18,9 @@ const Invoices = (props) => {
 
     const [invoiceId, setInvoiceId] = useState(null);
     const [showModalDetailInvoice, setShowModalDetailInvoice] = useState(false);
+
+    const [showModalDelete, setShowModalDelete] = useState(false);
+    const [bookingToDelete, setBookingToDelete] = useState(null);
 
     useEffect(() => {
         getInvoices();
@@ -54,6 +58,23 @@ const Invoices = (props) => {
         setInvoiceId(hoaDonId);
         setShowModalDetailInvoice(true);
     };
+
+    const handleShowDeleteBooking = (bookingId) => {
+        setBookingToDelete(bookingId);
+        setShowModalDelete(true);
+    };
+
+    const confirmDeleteBooking = async () => {
+        let res = await deleteBooking(bookingToDelete, user.account.email);
+        if (res && res.EC === 0) {
+            toast.success(res.EM);
+            getBookings();
+        } else {
+            toast.error(res.EM || "Xóa thất bại!");
+        }
+        setShowModalDelete(false);
+        setBookingToDelete(null);
+    }
     
     return (
         <>
@@ -105,18 +126,39 @@ const Invoices = (props) => {
                         <p>Không có đặt phòng nào.</p>
                     ) : (
                         <Row>
-                        {bookings.map((booking, idx) => (
-                            <Col key={idx} md={4} className="mb-3">
-                                <Card className="shadow-sm h-100">
-                                    <Card.Body>
-                                        <Card.Title>Phòng: {booking?.tenPhong}</Card.Title>
-                                        <div><strong>Ngày đặt:</strong> {formatDateVN(booking?.createdAt)}</div>
-                                        <div><strong>Nhà trọ:</strong> {booking?.tenNha}</div>
-                                        <div><strong>Trạng thái:</strong> Chờ xử lý</div>
-                                    </Card.Body>
-                                </Card>
-                            </Col>
-                        ))}
+                        {bookings.map((booking, idx) => {
+                            const isSuccess = /done\s*-?/i.test(booking?.dienGiai || "");
+                            return (
+                                <Col key={idx} md={4} className="mb-3">
+                                    <Card className="shadow-sm h-100 position-relative">
+                                        <Card.Body>
+                                            <Button
+                                                variant="outline-danger"
+                                                size="sm"
+                                                className="position-absolute top-0 end-0 m-2"
+                                                onClick={() => handleShowDeleteBooking(booking.id)}
+                                                title="Xóa đặt phòng"
+                                                disabled={isSuccess}
+                                            >
+                                                <i className="fa fa-trash"></i>
+                                            </Button>
+                                            <Card.Title>Phòng: {booking?.tenPhong}</Card.Title>
+                                            <div><strong>Ngày đặt:</strong> {formatDateVN(booking?.createdAt)}</div>
+                                            <div><strong>Nhà trọ:</strong> {booking?.tenNha}</div>
+                                            <div><strong>Tên phòng:</strong> {booking?.tenPhong}</div>
+                                            <div><strong>Thông tin liên hệ:</strong></div>
+                                            <div>&emsp;{booking?.hoTenChuTro} - {booking?.soDienThoaiChuTro}</div>
+                                            <div>
+                                                <strong>Trạng thái:</strong>{" "}
+                                                <span className={isSuccess ? "text-success" : "text-warning"}>
+                                                    {isSuccess ? "Thành công" : "Chờ xử lý"}
+                                                </span>
+                                            </div>
+                                        </Card.Body>
+                                    </Card>
+                                </Col>
+                            );
+                        })}
                         </Row>
                     )}
                 </div>
@@ -126,6 +168,14 @@ const Invoices = (props) => {
                 show={showModalDetailInvoice}
                 onHide={() => setShowModalDetailInvoice(false)}
                 hoaDonId={invoiceId}
+            />
+
+            <ModalDelete
+                show={showModalDelete}
+                handleClose={() => setShowModalDelete(false)}
+                confirmDelete={confirmDeleteBooking}
+                title="Xóa yêu cầu đặt phòng"
+                content="Bạn có chắc chắn muốn xóa đặt phòng này không?"
             />
         </>
     );

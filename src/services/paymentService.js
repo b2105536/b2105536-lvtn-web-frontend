@@ -24,10 +24,15 @@ const fetchAllBookings = (email) => {
     return axios.get(`/api/v1/bookings?email=${email}`);
 };
 
+const deleteBooking = (bookingId, email) => {
+    return axios.post(`/api/v1/booking/delete`, { bookingId, email });;
+};
+
 export {
     getPaymentInfo,
     createZaloPayOrder,
     fetchAllInvoices,
     fetchDetailInvoice,
-    fetchAllBookings
+    fetchAllBookings,
+    deleteBooking
 }
