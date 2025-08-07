@@ -1,6 +1,6 @@
 import axios from '../setup/axios';
 
-const fetchAllRooms = (page, limit, nhaId = 'ALL', ttPhongId = 'ALL', giaThueTu = '', giaThueDen = '', dienTichTu = '', dienTichDen = '', sucChua = 'ALL', coGacXep = 'ALL') => {
+const fetchAllRooms = (page, limit, nhaId = 'ALL', ttPhongId = 'ALL', giaThueTu = '', giaThueDen = '', dienTichTu = '', dienTichDen = '', sucChua = 'ALL', coGacXep = 'ALL', taiSanId = 'ALL') => {
     return axios.get(`/api/v1/room/read`, {
         params: {
             page,
@@ -10,7 +10,8 @@ const fetchAllRooms = (page, limit, nhaId = 'ALL', ttPhongId = 'ALL', giaThueTu 
             giaThueTu, giaThueDen,
             dienTichTu, dienTichDen,
             sucChua,
-            coGacXep
+            coGacXep,
+            taiSanId
         }
     });
 }

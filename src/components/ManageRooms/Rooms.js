@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import './Rooms.scss';
 import { deleteRoom, fetchAllRooms, fetchHouse, fetchRoomStatus, fetchRentRange, fetchAreaRange, fetchCapacity } from '../../services/roomService';
+import { fetchAsset } from '../../services/managementService';
 import ReactPaginate from 'react-paginate';
 import { toast } from 'react-toastify';
 import ModalDelete from '../ManageUsers/ModalDelete';
@@ -21,6 +22,8 @@ const Rooms = (props) => {
     const [listCapacities, setListCapacities] = useState([]);
     const [selectedCapacity, setSelectedCapacity] = useState('ALL');
     const [hasMezzanine, setHasMezzanine] = useState('ALL');
+    const [listAssets, setListAssets] = useState([]);
+    const [selectedAsset, setSelectedAsset] = useState('ALL');
 
     const [listRooms, setListRooms] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
@@ -44,7 +47,8 @@ const Rooms = (props) => {
             fetchRoomStatuses(),
             fetchRentRanges(),
             fetchAreaRanges(),
-            fetchCapacities()
+            fetchCapacities(),
+            fetchAssetsList()
         ]);
     };
 
@@ -83,9 +87,16 @@ const Rooms = (props) => {
         }
     };
 
+    const fetchAssetsList = async () => {
+        let res = await fetchAsset();
+        if (res && res.EC === 0) {
+            setListAssets(res.DT);
+        }
+    };
+
     useEffect (() => {
         fetchRooms();
-    }, [currentPage, selectedHouse, selectedRoomStatus, selectedRentRange, selectedAreaRange, selectedCapacity, hasMezzanine]);
+    }, [currentPage, selectedHouse, selectedRoomStatus, selectedRentRange, selectedAreaRange, selectedCapacity, hasMezzanine, selectedAsset]);
 
     const fetchRooms = async () => {
         let giaThueTu = '', giaThueDen = '', dienTichTu = '', dienTichDen = '';
@@ -118,7 +129,8 @@ const Rooms = (props) => {
             giaThueTu, giaThueDen,
             dienTichTu, dienTichDen,
             selectedCapacity,
-            hasMezzanine
+            hasMezzanine,
+            selectedAsset
         );
         if (response && response.EC === 0) {
             setTotalPages(response.DT.totalPages);
@@ -171,6 +183,7 @@ const Rooms = (props) => {
         setSelectedAreaRange('ALL');
         setSelectedCapacity('ALL');
         setHasMezzanine('ALL');
+        setSelectedAsset('ALL');
         setCurrentPage(1);
     };
 
@@ -198,7 +211,7 @@ const Rooms = (props) => {
                             </button>
                             <div className="filter-row my-3">
                                 <div className="row">
-                                    <div className="col-md-2">
+                                    <div className="col-md-3">
                                         <select
                                             className="form-select"
                                             value={selectedHouse}
@@ -210,7 +223,7 @@ const Rooms = (props) => {
                                             ))}
                                         </select>
                                     </div>
-                                    <div className="col-md-2">
+                                    <div className="col-md-3">
                                         <select
                                             className="form-select"
                                             value={selectedRentRange}
@@ -225,7 +238,7 @@ const Rooms = (props) => {
                                             ))}
                                         </select>
                                     </div>
-                                    <div className="col-md-2">
+                                    <div className="col-md-3">
                                         <select
                                             className="form-select"
                                             value={selectedAreaRange}
@@ -240,7 +253,7 @@ const Rooms = (props) => {
                                             ))}
                                         </select>
                                     </div>
-                                    <div className="col-md-2">
+                                    <div className="col-md-3">
                                         <select
                                             className="form-select"
                                             value={selectedCapacity}
@@ -252,7 +265,9 @@ const Rooms = (props) => {
                                             ))}
                                         </select>
                                     </div>
-                                    <div className="col-md-2">
+                                </div>
+                                <div className="row mt-3">
+                                    <div className="col-md-3">
                                         <select
                                             className="form-select"
                                             value={hasMezzanine}
@@ -263,7 +278,7 @@ const Rooms = (props) => {
                                             <option value="false">Không có gác</option>
                                         </select>
                                     </div>
-                                    <div className="col-md-2">
+                                    <div className="col-md-3">
                                         <select
                                             className="form-select"
                                             value={selectedRoomStatus}
@@ -272,6 +287,18 @@ const Rooms = (props) => {
                                             <option value="ALL">Trạng thái</option>
                                             {listRoomStatuses.map((stat) => (
                                                 <option key={stat.id} value={stat.id}>{stat.giaTri}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="col-md-3">
+                                        <select
+                                            className="form-select"
+                                            value={selectedAsset}
+                                            onChange={(e) => setSelectedAsset(e.target.value)}
+                                        >
+                                            <option value="ALL">Tài sản</option>
+                                            {listAssets.map((asset) => (
+                                                <option key={asset.id} value={asset.id}>{asset.tenTaiSan}</option>
                                             ))}
                                         </select>
                                     </div>

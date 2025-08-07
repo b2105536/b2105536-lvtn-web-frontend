@@ -156,6 +156,23 @@ const HouseDetail = () => {
                             <strong>Trạng thái:</strong>
                             <span>{selectedRoom?.BangMa?.giaTri}</span>
                         </div>
+                        {selectedRoom?.PhongTaiSans?.length > 0 && (
+                            <>
+                                <hr />
+                                <h6>Tài sản đi kèm</h6>
+                                <ul className="list-group">
+                                    {selectedRoom?.PhongTaiSans.map((pts, idx) => (
+                                        <li key={idx} className="list-group-item d-flex justify-content-between align-items-start">
+                                            <div>
+                                                <div><strong>{pts.TaiSan?.tenTaiSan}</strong> ({pts.soLuong} {pts.TaiSan?.dvtTaiSan?.toLowerCase()})</div>
+                                                <small>{pts.TaiSan?.moTaTaiSan}</small>
+                                            </div>
+                                            <span className="badge bg-info">{pts.tinhTrang}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </>
+                        )}
                     </Modal.Body>
                     <Modal.Footer>
                         <Button variant="secondary" onClick={() => handleCloseModal()}>Đóng</Button>
