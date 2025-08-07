@@ -81,7 +81,7 @@ const Role = (props) => {
                                 return( 
                                     <div className='row role-child' key={`child-${key}`}>
                                         <div className={`col-5 form-group ${key}`}>
-                                            <label>URL:</label>
+                                            <label><span className='red'>*</span>URL:</label>
                                             <input
                                                 type='text'
                                                 className={child.isValidUrl ? 'form-control' : 'form-control is-invalid'}

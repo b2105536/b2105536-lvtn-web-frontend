@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import './Rooms.scss';
 import { deleteRoom, fetchAllRooms, fetchHouse, fetchRoomStatus, fetchRentRange, fetchAreaRange, fetchCapacity } from '../../services/roomService';
 import ReactPaginate from 'react-paginate';
@@ -7,6 +8,8 @@ import ModalDelete from '../ManageUsers/ModalDelete';
 import ModalRoom from './ModalRoom';
 
 const Rooms = (props) => {
+    const history = useHistory();
+
     const [listHouses, setListHouses] = useState([]);
     const [selectedHouse, setSelectedHouse] = useState('ALL');
     const [listRoomStatuses, setListRoomStatuses] = useState([]);
@@ -181,7 +184,7 @@ const Rooms = (props) => {
                         </div>
                         <div className='actions my-3'>
                             <button className='btn btn-success refresh' onClick={() => handleRefresh()}>
-                                    <i className="fa fa-refresh"></i>Làm mới
+                                <i className="fa fa-refresh"></i>Làm mới
                             </button>
                             <button className='btn btn-primary'
                                 onClick={() => {
@@ -189,6 +192,9 @@ const Rooms = (props) => {
                                     setActionModalRoom("CREATE")
                                 }}>
                                 <i className="fa fa-plus-circle"></i>Thêm phòng trọ
+                            </button>
+                            <button className='btn btn-secondary asset-management' onClick={() => history.push('/manage/asset')}>
+                                <i className="fa fa-plus"></i>Thêm tài sản
                             </button>
                             <div className="filter-row my-3">
                                 <div className="row">

@@ -1,13 +1,16 @@
-import './ManageServices.scss';
+import './ManageAssets.scss';
 import { useRef, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import _ from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 import { toast } from 'react-toastify';
-import { createServices } from '../../services/managementService';
-import TableService from './TableService';
+import { createAssets } from '../../services/managementService';
+import TableAsset from './TableAsset';
 
-const ManageServices = (props) => {
-    const childDefaultData = { tenDV: '', donViTinh: '', ghiChuDV: '', donGia: '', isValidUrl: true }
+const ManageAssets = (props) => {
+    const history = useHistory();
+
+    const childDefaultData = { tenTaiSan: '', moTaTaiSan: '', dvtTaiSan: '', isValidUrl: true }
     const childRef = useRef();
 
     const [listChilds, setListChilds] = useState({
@@ -18,7 +21,7 @@ const ManageServices = (props) => {
         let _listChilds = _.cloneDeep(listChilds);
         _listChilds[key][name] = value;
 
-        if (value && name === 'tenDV') {
+        if (value && name === 'tenTaiSan') {
             _listChilds[key]['isValidUrl'] = true;
         }
         setListChilds(_listChilds);
@@ -41,10 +44,9 @@ const ManageServices = (props) => {
         let result = [];
         Object.entries(_listChilds).map(([key, child], index) => {
             result.push({
-                tenDV: child.tenDV,
-                donViTinh: child.donViTinh,
-                ghiChuDV: child.ghiChuDV,
-                donGia: child.donGia
+                tenTaiSan: child.tenTaiSan,
+                moTaTaiSan: child.moTaTaiSan,
+                dvtTaiSan: child.dvtTaiSan
             });
         })
         return result;
@@ -52,19 +54,19 @@ const ManageServices = (props) => {
 
     const handleSave = async () => {
         let invalidObj = Object.entries(listChilds).find(([key, child], index) => {
-            return child && !child.tenDV;
+            return child && !child.tenTaiSan;
         });
 
         if (!invalidObj) {
             let data = buildDataToPersist();
-            let res = await createServices(data);
+            let res = await createAssets(data);
             if (res && res.EC === 0) {
                 toast.success(res.EM);
-                childRef.current.fetchListServicesAgain();
+                childRef.current.fetchListAssetsAgain();
                 setListChilds({ child: childDefaultData });
             }
         } else {
-            toast.error("Tên dịch vụ không được rỗng.");
+            toast.error("Tên tài sản không được rỗng.");
             let _listChilds = _.cloneDeep(listChilds);
             const key = invalidObj[0];
             _listChilds[key]['isValidUrl'] = false;
@@ -73,49 +75,52 @@ const ManageServices = (props) => {
     }
 
     return (
-        <div className='service-container'>
+        <div className='asset-container mt-3'>
             <div className='container'>
-                <div className='adding-services mt-3'>
-                    <div className='title-service'><h3>Thêm dịch vụ</h3></div>
-                    <div className='service-parent'>
+                <nav aria-label="breadcrumb">
+                    <ol className="breadcrumb">
+                        <li className="breadcrumb-item">
+                            <span onClick={() => history.push('/rooms')}>
+                                Danh sách phòng trọ
+                            </span>
+                        </li>
+                        <li className="breadcrumb-item active" aria-current="page">
+                            Quản lý tài sản
+                        </li>
+                    </ol>
+                </nav>
+                <div className='adding-assets mt-3'>
+                    <div className='title-asset'><h3>Thêm tài sản</h3></div>
+                    <div className='asset-parent'>
                         {
                             Object.entries(listChilds).map(([key, child], index) => {
                                 return( 
-                                    <div className='row service-child' key={`child-${key}`}>
+                                    <div className='row asset-child' key={`child-${key}`}>
                                         <div className={`col-3 form-group ${key}`}>
-                                            <label><span className='red'>*</span>Tên dịch vụ:</label>
+                                            <label><span className='red'>*</span>Tên tài sản:</label>
                                             <input
                                                 type='text'
                                                 className={child.isValidUrl ? 'form-control' : 'form-control is-invalid'}
-                                                value={child.tenDV}
-                                                onChange={(event) => handleOnChangeInput('tenDV', event.target.value, key)}
+                                                value={child.tenTaiSan}
+                                                onChange={(event) => handleOnChangeInput('tenTaiSan', event.target.value, key)}
                                             />
                                         </div>
-                                        <div className='col-2 form-group'>
+                                        <div className='col-5 form-group'>
+                                            <label>Mô tả:</label>
+                                            <input
+                                                type='text'
+                                                className='form-control'
+                                                value={child.moTaTaiSan}
+                                                onChange={(event) => handleOnChangeInput('moTaTaiSan', event.target.value, key)}
+                                            />
+                                        </div>
+                                        <div className='col-3 form-group'>
                                             <label>Đơn vị tính:</label>
                                             <input
                                                 type='text'
                                                 className='form-control'
-                                                value={child.donViTinh}
-                                                onChange={(event) => handleOnChangeInput('donViTinh', event.target.value, key)}
-                                            />
-                                        </div>
-                                        <div className='col-2 form-group'>
-                                            <label>Đơn giá:</label>
-                                            <input
-                                                type='text'
-                                                className='form-control'
-                                                value={child.donGia}
-                                                onChange={(event) => handleOnChangeInput('donGia', event.target.value, key)}
-                                            />
-                                        </div>
-                                        <div className='col-4 form-group'>
-                                            <label>Ghi chú:</label>
-                                            <input
-                                                type='text'
-                                                className='form-control'
-                                                value={child.ghiChuDV}
-                                                onChange={(event) => handleOnChangeInput('ghiChuDV', event.target.value, key)}
+                                                value={child.dvtTaiSan}
+                                                onChange={(event) => handleOnChangeInput('dvtTaiSan', event.target.value, key)}
                                             />
                                         </div>
                                         <div className='col-1 mt-4 actions'>
@@ -134,13 +139,13 @@ const ManageServices = (props) => {
                     </div>   
                 </div>
                 <hr />
-                <div className='mt-3 table-service'>
-                    <h4>Danh sách dịch vụ cung cấp:</h4>
-                    <TableService ref={childRef} />
+                <div className='mt-3 table-asset'>
+                    <h4>Danh sách tài sản đi kèm:</h4>
+                    <TableAsset ref={childRef} />
                 </div>
             </div>
         </div>
     );
 }
 
-export default ManageServices;
+export default ManageAssets;

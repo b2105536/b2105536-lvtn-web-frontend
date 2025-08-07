@@ -128,7 +128,7 @@ const TableService = forwardRef ((props, ref) => {
                 <div className='edit-service-form row mb-3'>
                     <h4>Chỉnh sửa dịch vụ:</h4>
                     <div className='col-3 form-group'>
-                        <label>Tên dịch vụ:</label>
+                        <label><span className='red'>*</span>Tên dịch vụ:</label>
                         <input
                             type='text'
                             className='form-control'
@@ -137,7 +137,7 @@ const TableService = forwardRef ((props, ref) => {
                         />
                     </div>
                     <div className='col-2 form-group'>
-                        <label>Đơn vị tính:</label>
+                        <label><span className='red'>*</span>Đơn vị tính:</label>
                         <input
                             type='text'
                             className='form-control'
@@ -155,7 +155,7 @@ const TableService = forwardRef ((props, ref) => {
                         />
                     </div>
                     <div className='col-4 form-group'>
-                        <label>Ghi chú:</label>
+                        <label><span className='red'>*</span>Ghi chú:</label>
                         <input
                             type='text'
                             className='form-control'

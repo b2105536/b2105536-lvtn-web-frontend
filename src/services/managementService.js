@@ -113,6 +113,23 @@ const fetchBookingCountByRoom = (roomId) => {
     return axios.get(`/api/v1/manage/bookings/count/${roomId}`);
 };
 
+// Assets:
+const createAssets = (assets) => {
+    return axios.post('/api/v1/manage/asset/create', [...assets]);
+};
+
+const fetchAllAssets = (page, limit) => {
+    return axios.get(`/api/v1/manage/asset/read?page=${page}&limit=${limit}`);
+};
+
+const deleteAsset = (asset) => {
+    return axios.delete('/api/v1/manage/asset/delete', {data: {id: asset.id}});
+};
+
+const updateCurrentAsset = (assetData) => {
+    return axios.put('/api/v1/manage/asset/update', {...assetData});
+};
+
 export {
     fetchHousesByOwner,
     fetchRoom,
@@ -138,5 +155,9 @@ export {
     updateHouseInfo,
     fetchHouseImages,
     fetchBookingsByRoom,
-    fetchBookingCountByRoom
+    fetchBookingCountByRoom,
+    createAssets,
+    fetchAllAssets,
+    deleteAsset,
+    updateCurrentAsset
 }

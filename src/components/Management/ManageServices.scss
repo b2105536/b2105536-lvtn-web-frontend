@@ -1,32 +1,59 @@
 .service-container {
-    .actions {
-        i {
-            padding-top: 7px;
-            padding-right: 7px;
-            font-size: 22px;
-            cursor: pointer;
-        }
+    .adding-services {
+        .service-parent {
+            .service-child {
+                .red {
+                    color: red;
+                    margin-right: .25rem !important;
+                }
 
-        .add {
-            color: green;
-        }
-
-        .delete {
-            color: red;
-        }
-
-        .save {
-            color: blue;
-        }
-        
-        .cancel {
-            color: gray;
+                .actions {
+                    i {
+                        padding-top: 7px;
+                        padding-right: 7px;
+                        font-size: 22px;
+                        cursor: pointer;
+                    }
+                
+                    .add {
+                        color: green;
+                    }
+                
+                    .delete {
+                        color: red;
+                    }
+                }
+            }
         }
     }
 
     .table-service {
         i {
             padding-right: 7px;
+        }
+
+        .edit-service-form {
+            .red {
+                color: red;
+                margin-right: .25rem !important;
+            }
+
+            .actions {
+                i {
+                    padding-top: 7px;
+                    padding-right: 7px;
+                    font-size: 22px;
+                    cursor: pointer;
+                }
+            
+                .save {
+                    color: blue;
+                }
+            
+                .cancel {
+                    color: gray;
+                }
+            }
         }
     }
 }

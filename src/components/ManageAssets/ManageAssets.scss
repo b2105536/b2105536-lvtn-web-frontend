@@ -1,7 +1,12 @@
-.role-container {
-    .adding-roles {
-        .role-parent {
-            .role-child {
+.asset-container {
+    .breadcrumb span {
+        color: #0d6efd;
+        cursor: pointer;
+    }
+
+    .adding-assets {
+        .asset-parent {
+            .asset-child {
                 .red {
                     color: red;
                     margin-right: .25rem !important;
@@ -14,11 +19,11 @@
                         font-size: 22px;
                         cursor: pointer;
                     }
-                
+
                     .add {
                         color: green;
                     }
-                
+
                     .delete {
                         color: red;
                     }
@@ -26,14 +31,13 @@
             }
         }
     }
-    
 
-    .table-role {
+    .table-asset {
         i {
             padding-right: 7px;
         }
 
-        .edit-role-form {
+        .edit-asset-form {
             .red {
                 color: red;
                 margin-right: .25rem !important;
@@ -46,7 +50,7 @@
                     font-size: 22px;
                     cursor: pointer;
                 }
-            
+
                 .save {
                     color: blue;
                 }

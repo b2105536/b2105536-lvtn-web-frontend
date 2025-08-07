@@ -18,6 +18,7 @@ import UserAccount from "../components/UserAccount/UserAccount";
 import ManageRevenue from "../components/Management/ManageRevenue";
 import HouseDetail from "../components/Home/HouseDetail";
 import Booking from "../components/Home/Booking";
+import ManageAssets from "../components/ManageAssets/ManageAssets";
 
 const AppRoutes = (props) => {
     return (
@@ -36,6 +37,7 @@ const AppRoutes = (props) => {
             <PrivateRoutes path="/my-account" component={UserAccount} />
             <PrivateRoutes path="/manage/revenue" component={ManageRevenue} />
             <PrivateRoutes path="/house/booking/:roomId" component={Booking} />
+            <PrivateRoutes path="/manage/asset" component={ManageAssets} />
             
             <Route path="/login">
               <Login />

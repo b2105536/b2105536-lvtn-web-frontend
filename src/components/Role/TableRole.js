@@ -112,7 +112,7 @@ const TableRole = forwardRef ((props, ref) => {
                 <div className='edit-role-form row mb-3'>
                     <h4>Chỉnh sửa quyền hạn:</h4>
                     <div className='col-5 form-group'>
-                        <label>URL:</label>
+                        <label><span className='red'>*</span>URL:</label>
                         <input
                             type='text'
                             className='form-control'
@@ -121,7 +121,7 @@ const TableRole = forwardRef ((props, ref) => {
                         />
                     </div>
                     <div className='col-5 form-group'>
-                        <label>Quyền hạn:</label>
+                        <label><span className='red'>*</span>Quyền hạn:</label>
                         <input
                             type='text'
                             className='form-control'
