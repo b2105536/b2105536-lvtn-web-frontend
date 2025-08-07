@@ -95,6 +95,18 @@ const fetchStudentInfo = (roomId) => {
     return axios.get(`/api/v1/manage/room/student-info?phongId=${roomId}`);
 };
 
+const fetchAsset = () => {
+    return axios.get('/api/v1/manage/asset/read');
+};
+
+const fetchAssetsOfRoom = (roomId) => {
+  return axios.get(`/api/v1/manage/room/room-asset/${roomId}`);
+};
+
+const saveRoomAssets = (roomId, assets) => {
+  return axios.post(`/api/v1/manage/room/update-room-asset/${roomId}`, { assets });
+};
+
 // Modal Edit House
 const updateHouseInfo = (data) => {
     return axios.put('/api/v1/manage/house/update', data);
@@ -159,5 +171,8 @@ export {
     createAssets,
     fetchAllAssets,
     deleteAsset,
-    updateCurrentAsset
+    updateCurrentAsset,
+    fetchAsset,
+    fetchAssetsOfRoom,
+    saveRoomAssets
 }
