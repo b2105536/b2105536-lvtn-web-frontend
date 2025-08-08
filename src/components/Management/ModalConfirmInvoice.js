@@ -101,7 +101,7 @@ const ModalConfirmInvoice = (props) => {
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="secondary" onClick={() => onHide()}>Đóng</Button>
-                <Button variant="success" onClick={() => handleSave()}>Xác nhận</Button>
+                <Button variant="success" onClick={() => handleSave()} disabled={!invoiceInfo}>Xác nhận</Button>
             </Modal.Footer>
         </Modal>
     );
