@@ -13,6 +13,8 @@ import ModalEditRoom from './ModalEditRoom';
 import ModalStudentInfo from './ModalStudentInfo';
 import ModalEditHouse from './ModalEditHouse';
 import ModalBookingList from './ModalBookingList';
+import ModalCreateContract from './ModalCreateContract';
+import ModalContract from './ModalContract';
 
 const ManageStudents = (props) => {
     const { user } = useContext(UserContext);
@@ -62,7 +64,14 @@ const ManageStudents = (props) => {
 
     // Modal Booking List
     const [showBookingModal, setShowBookingModal] = useState(false);
-    const [selectedBookingRoomId, setSelectedBookingRoomId] = useState(null); 
+    const [selectedBookingRoomId, setSelectedBookingRoomId] = useState(null);
+
+    // Modal Create Contract
+    const [showModalCreateContract, setShowModalCreateContract] = useState(false);
+    const [contractId, setContractId] = useState(null);
+
+    // Modal Contract
+    const [showModalContract, setShowModalContract] = useState(false);
 
     useEffect (() => {
         getHouses();
@@ -212,6 +221,15 @@ const ManageStudents = (props) => {
                                             style={{ cursor: 'pointer' }}
                                         >
                                             Thanh toán
+                                        </span>
+                                    </li>
+                                    <li className="nav-item">
+                                        <span
+                                            className={`nav-link ${activeTab === 'contracts' ? 'active' : ''}`}
+                                            onClick={() => setActiveTab('contracts')}
+                                            style={{ cursor: 'pointer' }}
+                                        >
+                                            Hợp đồng
                                         </span>
                                     </li>
                                 </ul>
@@ -381,6 +399,63 @@ const ManageStudents = (props) => {
                                         )}
                                     </div>
                                 )}
+
+                                {activeTab === 'contracts' && (
+                                    <div className="row">
+                                        {listRooms.length > 0 ? (
+                                            listRooms
+                                                .filter(room => room.daChoThue && room.hopDongId)
+                                                .map((room, index) => (
+                                                    <div className="col-md-6 col-lg-4 mb-4" key={index}>
+                                                        <div className="card h-100 shadow-sm">
+                                                            <div className="card-header bg-success text-white">
+                                                                <strong>{room.tenPhong}</strong>
+                                                            </div>
+                                                            <div className="card-body d-flex flex-column">
+                                                                <div className="mb-2 d-flex align-items-center">
+                                                                    <i className="fa fa-user-circle-o me-2"></i>
+                                                                    <span>{room.sinhVienThue?.hoTen || 'Không rõ'}</span>
+                                                                </div>
+
+                                                                <div className="mb-3 d-flex align-items-center">
+                                                                    <i className="fa fa-bookmark me-2"></i>
+                                                                    <span>Số {room.hopDongId}/HĐ</span>
+                                                                </div>
+
+                                                                <div className="mt-auto d-flex justify-content-center gap-3">
+                                                                    <button className="btn btn-outline-dark px-4 py-2"
+                                                                        onClick={() => {
+                                                                            setContractId(room.hopDongId);
+                                                                            setShowModalCreateContract(true);
+                                                                        }}
+                                                                        disabled={room.HopDongs[0]?.noiDung === "Đã lập"}
+                                                                    >
+                                                                        Lập
+                                                                    </button>
+                                                                    <button className="btn btn-info px-4 py-2"
+                                                                        onClick={() => {
+                                                                            setContractId(room.hopDongId);
+                                                                            setShowModalContract(true);
+                                                                        }}
+                                                                        disabled={room.HopDongs[0]?.noiDung === null}
+                                                                    >
+                                                                        Xem
+                                                                    </button>
+                                                                    <button className="btn btn-warning px-4 py-2">
+                                                                        Gia hạn
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))
+                                        ) : (
+                                            <div className="col-12">
+                                                <p>Không có thông tin hợp đồng.</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -466,6 +541,19 @@ const ManageStudents = (props) => {
                 show={showBookingModal}
                 handleClose={() => setShowBookingModal(false)}
                 roomId={selectedBookingRoomId}
+            />
+
+            <ModalCreateContract
+                show={showModalCreateContract}
+                onHide={() => setShowModalCreateContract(false)}
+                hopDongId={contractId}
+                refresh={() => getAllRooms(selectedHouseId)}
+            />
+
+            <ModalContract 
+                show={showModalContract} 
+                onClose={() => setShowModalContract(false)} 
+                hopDongId={contractId} 
             />
         </>
     );

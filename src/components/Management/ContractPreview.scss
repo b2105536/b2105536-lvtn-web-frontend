@@ -1,0 +1,102 @@
+.contract-preview-root {
+    font-family: "Times New Roman", serif;
+    color: #000;
+    padding: 16px;
+    text-align: justify;
+
+    .contract-page {
+        width: 210mm;
+        min-height: 297mm;
+        padding: 24mm;
+        margin: 10mm auto;
+        background: white;
+        box-shadow: 0 0 0.5cm rgba(0, 0, 0, 0.1);
+        box-sizing: border-box;
+        page-break-after: always;
+    
+        .contract-header {
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 12px;
+    
+            .header-center {
+                font-weight: 700;
+
+                .motto {
+                    margin-top: 4px;
+                }
+            }
+    
+            .place-date {
+                margin-top: 16px;
+                text-align: right;
+                font-weight: normal;
+            }
+        }
+    
+        .contract-title {
+            text-align: center;
+            font-size: 18px;
+            font-weight: 700;
+            margin-top: 12px;
+        }
+    
+        .contract-number {
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 12px;
+        }
+    
+        .contract-body {
+            font-size: 18px;
+            line-height: 1.6;
+    
+            .section-title {
+                margin-top: 12px;
+                font-weight: 700;
+                font-size: inherit !important;
+            }
+        }
+    
+        .contract-sign {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 36px;
+            font-size: 18px;
+            text-align: center;
+    
+            .title {
+                font-weight: 700;
+                margin-bottom: 6px;
+            }
+    
+            .sign-space {
+                height: 60px;
+                width: 260px;
+                margin-bottom: 6px;
+            }
+        }
+    }
+
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+        
+        &,
+        & * {
+            visibility: visible;
+        }
+        
+        padding: 10mm;
+
+        .contract-page {
+            box-shadow: none !important;
+            margin: 0 auto !important;
+            padding: 10mm !important;
+            width: 190mm !important;
+            min-height: auto !important;
+            page-break-after: always !important;
+        }
+    }
+}
