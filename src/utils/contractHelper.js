@@ -72,4 +72,17 @@ const docBaSo = (baSo) => {
     return ketQua.trim();
 }
 
-export {docSoThanhChu};
+const getMonthsBetween = (endDate, startDate) => {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    let months = (end.getFullYear() - start.getFullYear()) * 12;
+    months += end.getMonth() - start.getMonth();
+
+    if (end.getDate() < start.getDate()) {
+        months--;
+    }
+
+    return months;
+}
+
+export {docSoThanhChu, getMonthsBetween};

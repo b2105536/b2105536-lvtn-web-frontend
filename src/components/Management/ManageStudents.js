@@ -15,6 +15,7 @@ import ModalEditHouse from './ModalEditHouse';
 import ModalBookingList from './ModalBookingList';
 import ModalCreateContract from './ModalCreateContract';
 import ModalContract from './ModalContract';
+import ModalExtendContract from './ModalExtendContract';
 
 const ManageStudents = (props) => {
     const { user } = useContext(UserContext);
@@ -72,6 +73,9 @@ const ManageStudents = (props) => {
 
     // Modal Contract
     const [showModalContract, setShowModalContract] = useState(false);
+
+    // Modal Extend
+    const [showModalExtend, setShowModalExtend] = useState(false);
 
     useEffect (() => {
         getHouses();
@@ -441,7 +445,13 @@ const ManageStudents = (props) => {
                                                                     >
                                                                         Xem
                                                                     </button>
-                                                                    <button className="btn btn-warning px-4 py-2">
+                                                                    <button className="btn btn-warning px-4 py-2"
+                                                                        onClick={() => {
+                                                                            setContractId(room.hopDongId);
+                                                                            setShowModalExtend(true);
+                                                                        }}
+                                                                        disabled={room.HopDongs[0]?.noiDung === null}
+                                                                    >
                                                                         Gia hạn
                                                                     </button>
                                                                 </div>
@@ -554,6 +564,13 @@ const ManageStudents = (props) => {
                 show={showModalContract} 
                 onClose={() => setShowModalContract(false)} 
                 hopDongId={contractId} 
+            />
+
+            <ModalExtendContract
+                show={showModalExtend}
+                onHide={() => setShowModalExtend(false)}
+                hopDongId={contractId}
+                refresh={() => getAllRooms(selectedHouseId)}
             />
         </>
     );
