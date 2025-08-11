@@ -16,6 +16,7 @@ import ModalBookingList from './ModalBookingList';
 import ModalCreateContract from './ModalCreateContract';
 import ModalContract from './ModalContract';
 import ModalExtendContract from './ModalExtendContract';
+import ModalRoomHistory from './ModalRoomHistory';
 
 const ManageStudents = (props) => {
     const { user } = useContext(UserContext);
@@ -76,6 +77,10 @@ const ManageStudents = (props) => {
 
     // Modal Extend
     const [showModalExtend, setShowModalExtend] = useState(false);
+
+    // Modal History
+    const [showModalHistory, setShowModalHistory] = useState(false);
+    const [selectedHistoryRoomId, setSelectedHistoryRoomId] = useState(null);
 
     useEffect (() => {
         getHouses();
@@ -262,6 +267,15 @@ const ManageStudents = (props) => {
                                                             setEditRoomStat(room.ttPhongId);
                                                             setHasContract(Number(room?.HopDongs[0]?.ttHopDongId) === 8 ? true : false);
                                                             setShowEditModal(true);
+                                                        }}
+                                                    ></i>
+                                                    <i
+                                                        className="fa fa-history text-warning"
+                                                        title="Xem lịch sử thuê phòng"
+                                                        style={{ cursor: 'pointer', fontSize: '1.2rem' }}
+                                                        onClick={() => {
+                                                            setSelectedHistoryRoomId(room.id);
+                                                            setShowModalHistory(true);
                                                         }}
                                                     ></i>
                                                     <i
@@ -571,6 +585,12 @@ const ManageStudents = (props) => {
                 onHide={() => setShowModalExtend(false)}
                 hopDongId={contractId}
                 refresh={() => getAllRooms(selectedHouseId)}
+            />
+
+            <ModalRoomHistory
+                show={showModalHistory}
+                handleClose={() => setShowModalHistory(false)}
+                roomId={selectedHistoryRoomId}
             />
         </>
     );

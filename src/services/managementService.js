@@ -142,6 +142,11 @@ const updateCurrentAsset = (assetData) => {
     return axios.put('/api/v1/manage/asset/update', {...assetData});
 };
 
+// Modal Room History
+const fetchRoomHistory = (roomId) => {
+    return axios.get(`/api/v1/manage/room/history?phongId=${roomId}`);
+};
+
 export {
     fetchHousesByOwner,
     fetchRoom,
@@ -174,5 +179,6 @@ export {
     updateCurrentAsset,
     fetchAsset,
     fetchAssetsOfRoom,
-    saveRoomAssets
+    saveRoomAssets,
+    fetchRoomHistory
 }
