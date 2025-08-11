@@ -1,6 +1,6 @@
 import { useContext, useState, useEffect } from "react";
 import { UserContext } from "../../context/UserContext";
-import { fetchAllInvoices, fetchAllBookings, deleteBooking } from "../../services/paymentService";
+import { fetchAllInvoices, fetchAllBookings, deleteBooking, fetchAllContracts } from "../../services/paymentService";
 import { Card, Button, Spinner, Row, Col } from 'react-bootstrap';
 import { toast } from "react-toastify";
 import { formatDateVN, removeVietnameseTones } from '../../utils/invoiceHelper';
@@ -16,6 +16,9 @@ const Invoices = (props) => {
     const [bookings, setBookings] = useState([]);
     const [loadingBookings, setLoadingBookings] = useState(true);
 
+    const [contracts, setContracts] = useState([]);
+    const [loadingContracts, setLoadingContracts] = useState(true);
+
     const [invoiceId, setInvoiceId] = useState(null);
     const [showModalDetailInvoice, setShowModalDetailInvoice] = useState(false);
 
@@ -25,6 +28,7 @@ const Invoices = (props) => {
     useEffect(() => {
         getInvoices();
         getBookings();
+        getContracts();
     }, []);
 
     const getInvoices = async () => {
@@ -44,6 +48,16 @@ const Invoices = (props) => {
             setLoadingBookings(false);
         } else {
             toast.error(res.EM);
+        }
+    }
+
+    const getContracts = async () => {
+        let res = await fetchAllContracts(user.account.email);
+        if (res && res.EC === 0) {
+            setContracts(res.DT);
+            setLoadingContracts(false);
+        } else {
+            toast.error(res.EM || "Lấy hợp đồng thất bại!");
         }
     }
 
@@ -74,6 +88,13 @@ const Invoices = (props) => {
         }
         setShowModalDelete(false);
         setBookingToDelete(null);
+    }
+
+    const daysRemaining = (endDate) => {
+        const end = new Date(endDate);
+        const now = new Date();
+        const diff = end - now;
+        return Math.max(Math.ceil(diff / (1000 * 60 * 60 * 24)), 0);
     }
     
     return (
@@ -159,6 +180,38 @@ const Invoices = (props) => {
                                 </Col>
                             );
                         })}
+                        </Row>
+                    )}
+                </div>
+                <div className='contract-container mt-3'>
+                    <div className='contract-title'>
+                        <h5>Danh sách hợp đồng</h5><hr />
+                    </div>
+
+                    {loadingContracts ? (
+                        <div className='loading-container'>
+                            <Spinner animation="border" className="text-primary" />
+                            <div className="mt-2">Đang tải dữ liệu...</div>
+                        </div>
+                    ) : contracts.length === 0 ? (
+                        <p>Không có hợp đồng nào.</p>
+                    ) : (
+                        <Row>
+                        {contracts.map((contract, idx) => (
+                            <Col key={idx} md={4} className="mb-3">
+                                <Card className="shadow-sm h-100">
+                                    <Card.Body>
+                                        <Card.Title>Hợp đồng #{contract.id}</Card.Title>
+                                        <div><strong>Ngày lập:</strong> {formatDateVN(contract.ngayLap)}</div>
+                                        <div><strong>Ngày bắt đầu:</strong> {formatDateVN(contract.ngayBD)}</div>
+                                        <div><strong>Ngày kết thúc:</strong> {formatDateVN(contract.ngayKT)}</div>
+                                        <div><strong>Nhà trọ:</strong> {contract?.Phong?.Nha?.ten}</div>
+                                        <div><strong>Phòng:</strong> {contract?.Phong?.tenPhong}</div>
+                                        <div><strong>Thời hạn còn lại:</strong> {daysRemaining(contract.ngayKT)} ngày</div>
+                                    </Card.Body>
+                                </Card>
+                            </Col>
+                        ))}
                         </Row>
                     )}
                 </div>

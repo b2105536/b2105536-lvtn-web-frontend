@@ -28,11 +28,16 @@ const deleteBooking = (bookingId, email) => {
     return axios.post(`/api/v1/booking/delete`, { bookingId, email });;
 };
 
+const fetchAllContracts = (email) => {
+    return axios.get(`/api/v1/contracts?email=${email}`);
+};
+
 export {
     getPaymentInfo,
     createZaloPayOrder,
     fetchAllInvoices,
     fetchDetailInvoice,
     fetchAllBookings,
-    deleteBooking
+    deleteBooking,
+    fetchAllContracts
 }
