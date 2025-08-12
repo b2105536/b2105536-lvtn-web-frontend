@@ -2,6 +2,7 @@ import { useContext, useState, useEffect } from "react";
 import './ManageRevenue.scss';
 import { UserContext } from "../../context/UserContext";
 import { fetchHousesByOwner, fetchListInvoices, fetchRevenueByTime } from "../../services/managementService";
+import { fetchRoomsCashflow } from "../../services/cashflowService";
 import { Card, Button, Row, Col } from 'react-bootstrap';
 import { toast } from "react-toastify";
 import { formatDateVN, removeVietnameseTones } from "../../utils/invoiceHelper";
@@ -9,6 +10,8 @@ import ModalDetailInvoice from "../Invoice/ModalDetailInvoice";
 import ReactPaginate from 'react-paginate';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend } from 'chart.js';
+import ModalRefundDeposit from "./ModalRefundDeposit";
+import ModalPayDebt from "./ModalPayDebt";
 
 ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend);
 
@@ -29,6 +32,14 @@ const ManageRevenue = (props) => {
     const [chartData, setChartData] = useState([]);
     const [chartType, setChartType] = useState('month');
 
+    const [roomsCashflow, setRoomsCashflow] = useState([]);
+
+    const [showModalRefund, setShowModalRefund] = useState(false);
+    const [selectedRoom, setSelectedRoom] = useState(null);
+
+    const [showModalPayDebt, setShowModalPayDebt] = useState(false);
+    const [selectedDebtRoom, setSelectedDebtRoom] = useState(null);
+
     useEffect (() => {
         getHouses();
     }, []);
@@ -40,6 +51,14 @@ const ManageRevenue = (props) => {
             setListInvoices([]);
         }
     }, [currentPage, selectedHouseId]);
+
+    useEffect(() => {
+        if (selectedHouseId) {
+            getRoomsCashflow(selectedHouseId);
+        } else {
+            setRoomsCashflow([]);
+        }
+    }, [selectedHouseId]);
 
     const getHouses = async () => {
         let res = await fetchHousesByOwner(user.account.email);
@@ -57,6 +76,15 @@ const ManageRevenue = (props) => {
             setListInvoices(res.DT.invoices);
         } else {
             toast.error(res.EC);
+        }
+    }
+
+    const getRoomsCashflow = async (houseId) => {
+        let res = await fetchRoomsCashflow(houseId);
+        if (res && res.EC === 0) {
+            setRoomsCashflow(res.DT);
+        } else {
+            toast.error(res.EM);
         }
     }
 
@@ -112,7 +140,17 @@ const ManageRevenue = (props) => {
             case 'year': return 'Thời gian (năm)';
             default: return 'Thời gian';
         }
-    }    
+    }
+
+    const handlePayDebt = (room) => {
+        setSelectedDebtRoom(room);
+        setShowModalPayDebt(true);
+    }
+
+    const handleRefund = (room) => {
+        setSelectedRoom(room);
+        setShowModalRefund(true);
+    }
 
     return (
         <>
@@ -161,7 +199,7 @@ const ManageRevenue = (props) => {
                                                     <div><strong>Sinh viên:</strong> {removeVietnameseTones(invoice.HopDong?.NguoiDung?.hoTen)}</div>
                                                     <div><strong>Số tiền phải trả:</strong> {Number(invoice.tongTienPhaiTra).toLocaleString('vi-VN')} VNĐ</div>
                                                     <div><strong>Số tiền đã trả:</strong> {Number(invoice.soTienDaTra).toLocaleString('vi-VN')} VNĐ</div>
-                                                    <div><strong>Còn lại:</strong> {Number(invoice.tienDuThangTrc).toLocaleString('vi-VN')} VNĐ</div>
+                                                    <div><strong>Còn lại:</strong> {Math.abs(Number(invoice.tienDuThangTrc)).toLocaleString('vi-VN')} VNĐ</div>
                                                     <div className="mt-3 text-end">
                                                         <Button
                                                             variant="primary"
@@ -201,6 +239,54 @@ const ManageRevenue = (props) => {
                                         </div>
                                     }
                                 </>
+                            )}
+                        </div>
+                        <hr />
+                        <div className="sub-title">
+                            <h5>Quản lý dòng tiền</h5>
+                        </div>
+                        <div className="cashflow-table mt-3">
+                            {roomsCashflow.length === 0 ? (
+                                <p className="text-muted">Không có dữ liệu dòng tiền.</p>
+                            ) : (
+                                <table className="table table-bordered table-hover text-center">
+                                    <thead>
+                                        <tr>
+                                            <th>Phòng</th>
+                                            <th>Tiền nợ (VNĐ)</th>
+                                            <th>Tiền đặt cọc (VNĐ)</th>
+                                            <th>Hành động</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {roomsCashflow.map((room, idx) => (
+                                            <tr key={idx}>
+                                                <td>{room.tenPhong}</td>
+                                                <td>{Math.abs(Number(room.tienNo)).toLocaleString('vi-VN')}</td>
+                                                <td>{Number(room.tienCoc).toLocaleString('vi-VN')}</td>
+                                                <td>
+                                                    <Button
+                                                        size="sm"
+                                                        variant="success"
+                                                        className="me-2"
+                                                        onClick={() => handlePayDebt(room)}
+                                                        disabled={Number(room.tienNo) <= 0}
+                                                    >
+                                                        Thu tiền
+                                                    </Button>
+                                                    <Button
+                                                        size="sm"
+                                                        variant="warning"
+                                                        onClick={() => handleRefund(room)}
+                                                        disabled={Number(room.tienCoc) <= 0}
+                                                    >
+                                                        Hoàn trả
+                                                    </Button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
                             )}
                         </div>
                         <hr />
@@ -282,6 +368,29 @@ const ManageRevenue = (props) => {
                 show={showModalDetailInvoice}
                 onHide={() => setShowModalDetailInvoice(false)}
                 hoaDonId={invoiceId}
+            />
+
+            <ModalRefundDeposit
+                show={showModalRefund}
+                onHide={(needReload) => {
+                    setShowModalRefund(false);
+                    if (needReload) {
+                        getRoomsCashflow(selectedHouseId);
+                    }
+                }}
+                room={selectedRoom}
+            />
+
+            <ModalPayDebt
+                show={showModalPayDebt}
+                onHide={(needReload) => {
+                    setShowModalPayDebt(false);
+                    if (needReload) {
+                        getRoomsCashflow(selectedHouseId);
+                    }
+                }}
+                room={selectedDebtRoom}
+                onSuccess={() => getRoomsCashflow(selectedHouseId)}
             />
         </>
     );

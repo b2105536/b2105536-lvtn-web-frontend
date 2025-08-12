@@ -117,7 +117,7 @@ const Invoices = (props) => {
                                         <div><strong>Sinh viên:</strong> {removeVietnameseTones(invoice.HopDong?.NguoiDung?.hoTen)}</div>
                                         <div><strong>Số tiền phải trả:</strong> {Number(invoice.tongTienPhaiTra).toLocaleString('vi-VN')} VNĐ</div>
                                         <div><strong>Số tiền đã trả:</strong> {Number(invoice.soTienDaTra).toLocaleString('vi-VN')} VNĐ</div>
-                                        <div><strong>Còn lại:</strong> {Number(invoice.tienDuThangTrc).toLocaleString('vi-VN')} VNĐ</div>
+                                        <div><strong>Còn lại:</strong> {Math.abs(Number(invoice.tienDuThangTrc)).toLocaleString('vi-VN')} VNĐ</div>
                                         <div className="mt-3 text-end">
                                             <Button
                                                 variant="primary"

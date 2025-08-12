@@ -41,6 +41,8 @@ const TableRole = forwardRef ((props, ref) => {
         if (data && +data.EC === 0) {
             toast.success(data.EM);
             await getAllRoles();
+        } else {
+            toast.error(data.EM);
         }
     }
 

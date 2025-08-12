@@ -165,7 +165,7 @@ const ModalDetailInvoice = (props) => {
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <strong>Còn lại:</strong>
-                            <strong>{Number(data.tienDuThangTrc).toLocaleString('vi-VN')} VNĐ</strong>
+                            <strong>{Math.abs(Number(data.tienDuThangTrc)).toLocaleString('vi-VN')} VNĐ</strong>
                         </div>
                         {data.ghiChuHD && (
                             <div style={{ fontSize: '13px', color: '#555', marginTop: '5px' }}>
