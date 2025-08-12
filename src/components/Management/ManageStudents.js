@@ -548,6 +548,7 @@ const ManageStudents = (props) => {
                 show={showStudentModal}
                 handleClose={() => setShowStudentModal(false)}
                 sinhVien={studentInfo}
+                refresh={() => getAllRooms(selectedHouseId)}
             />
 
             {showUpdateHouseModal &&
